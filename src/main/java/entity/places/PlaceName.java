@@ -1,6 +1,6 @@
 package entity.places;
 
-public enum PlaceType {
+public enum PlaceName {
     HOME,
     SCHOOL,
     STORE,
