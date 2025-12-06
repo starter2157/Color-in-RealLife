@@ -1,6 +1,6 @@
 package logic;
 
-import entity.base.Location;
+import entity.places.Location;
 import entity.places.*;
 
 import java.util.ArrayList;

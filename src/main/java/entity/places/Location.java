@@ -1,6 +1,4 @@
-package entity.base;
-
-import entity.places.PlaceType;
+package entity.places;
 
 public class Location {
     protected PlaceType placeType;

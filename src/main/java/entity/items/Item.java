@@ -1,9 +1,9 @@
-package entity.base;
+package entity.items;
 
-import entity.items.ItemType;
+import entity.base.Buyable;
 import logic.Player;
 
-public class Item implements Buyable{
+public class Item implements Buyable {
     private String name;
     private int price;
     private ItemType type;

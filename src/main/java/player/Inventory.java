@@ -1,6 +1,6 @@
 package player;
 
-import entity.base.Item;
+import entity.items.Item;
 
 import java.util.ArrayList;
 import java.util.List;

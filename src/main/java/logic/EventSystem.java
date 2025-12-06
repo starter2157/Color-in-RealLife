@@ -1,6 +1,6 @@
 package logic;
 
-import entity.base.RandomEvent;
+import entity.events.RandomEvent;
 
 import java.util.List;
 
