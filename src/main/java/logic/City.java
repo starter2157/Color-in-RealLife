@@ -1,6 +1,5 @@
 package logic;
 
-import entity.base.Locatable;
 import entity.base.Location;
 import entity.places.*;
 

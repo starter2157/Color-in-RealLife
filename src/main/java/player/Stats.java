@@ -2,15 +2,19 @@ package player;
 
 public class Stats {
     private int education;
-    private int health;
+    private int stress;
     private int happiness;
     private int money;
 
     public Stats(){
         this.education = 0;
-        this.health = 0;
+        this.stress = 0;
         this.happiness = 0;
         this.money = 200;
+    }
+
+    public void reduceStress(int amount){
+        setStress(getStress() - amount);
     }
 
     public int getEducation() {
@@ -22,13 +26,13 @@ public class Stats {
         this.education = Math.min(this.education, 1000);
     }
 
-    public int getHealth() {
-        return health;
+    public int getStress() {
+        return stress;
     }
 
-    public void setHealth(int health) {
-        this.health = Math.max(0, health);
-        this.health = Math.min(this.health, 1000);
+    public void setStress(int stress) {
+        this.stress = Math.max(0, stress);
+        this.stress = Math.min(this.stress, 1000);
     }
 
     public int getHappiness() {
