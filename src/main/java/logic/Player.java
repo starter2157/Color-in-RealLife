@@ -1,9 +1,9 @@
 package logic;
 
-import entity.base.Location;
+import entity.places.Location;
 import entity.places.PlaceType;
 import player.Inventory;
-import entity.base.Job;
+import entity.jobs.Job;
 import player.Stats;
 
 public class Player {
@@ -28,7 +28,11 @@ public class Player {
         this.cityMap = new City();
     }
 
-    public void rest(PlaceType placeType){
-        if(placeType.equals(PlaceType.HOME)) stats.reduceStress(200);
+    public void rest(int amount){
+        stats.reduceStress(amount);
+    }
+
+    public void gainStress(int amount){
+        stats.gainStress(amount);
     }
 }

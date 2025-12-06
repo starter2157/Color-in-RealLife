@@ -1,9 +1,9 @@
-package entity.base;
+package entity.events;
 
 import logic.Player;
 
 public abstract class RandomEvent {
-    private String description;
+    protected String description;
 
     public RandomEvent(String description){
         this.description = description;

@@ -1,10 +1,11 @@
 package entity.places;
 
-import entity.base.Location;
 import entity.base.Restable;
 import logic.Player;
 
 public class Home extends Location implements Restable {
+
+    private final int REST_VALUE = 200;
 
     public Home(){
         super(PlaceType.HOME);
@@ -12,6 +13,6 @@ public class Home extends Location implements Restable {
 
     @Override
     public void rest(Player player) {
-        player.rest(this.getPlaceType());
+        player.rest(REST_VALUE);
     }
 }

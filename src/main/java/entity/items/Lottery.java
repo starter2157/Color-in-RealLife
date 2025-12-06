@@ -1,7 +1,5 @@
 package entity.items;
 
-import entity.base.Item;
-
 public class Lottery extends Item {
     private boolean isGrandPrize;
     private int number;
