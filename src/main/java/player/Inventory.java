@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Inventory {
+
     private List<Item> items;
 
     public Inventory(){
@@ -19,4 +20,9 @@ public class Inventory {
     public void deleteItem(Item item){
         items.remove(item);
     }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
 }
