@@ -8,10 +8,14 @@ public class GameLogic {
     private int currentTurn;
     private int maxTurn;
     private boolean isLastTurn;
+    private GameMode gameMode;
+    private int playerAmount;
 
     // Set Player amount and GameMode
 
     public void init(int playerAmount, GameMode gameMode){
+        this.gameMode = gameMode;
+        this.playerAmount = playerAmount;
         for (int i = 1; i <= playerAmount; i++) {
             players.add(new Player("Player" + i));
         }
@@ -26,7 +30,7 @@ public class GameLogic {
             boolean isPlayerWin = false;
             for(Player player : players){
                 player.startTurn();
-                isPlayerWin = player.isWin();
+                isPlayerWin = player.isWin(gameMode);
             }
             if(isPlayerWin) isLastTurn = true;
         }

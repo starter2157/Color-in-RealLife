@@ -36,6 +36,22 @@ public class Player {
         stats.reduceStress(amount);
     }
 
+    private void work(int amount){
+        stats.setMoney(stats.getMoney() + amount);
+        stats.gainStress(1);
+    }
+
+    private void study(){
+        stats.setEducation(stats.getEducation() + 1);
+        stats.gainStress(2);
+    }
+
+
+
+    private void useTime(int amount){
+        this.timeUsed += amount;
+    }
+
     public void gainStress(int stress){
         stats.gainStress(stress);
     }
@@ -47,12 +63,16 @@ public class Player {
     }
 
     public void doAction(){
-
+        // do something
     }
 
-    public boolean isWin(){
-        if(stats.getMoney() == 1000 && stats.getEducation() == 1000 && stats.getHappiness() == 1000) return true;
-        return false;
+    // Win Condition
+
+    public boolean isWin(GameMode gameMode){
+        if(gameMode.equals(GameMode.SHORT) && stats.getMoney() == 1500 && stats.getEducation() == 20 && stats.getHappiness() == 500) return true;
+        else if(gameMode.equals(GameMode.MEDIUM) && stats.getMoney() == 2000 && stats.getEducation() == 35 && stats.getHappiness() == 1000) return true;
+        else if(gameMode.equals(GameMode.LONG) && stats.getMoney() == 4000 && stats.getEducation() == 50 && stats.getHappiness() == 1500) return true;
+        else return gameMode.equals(GameMode.MARATHON) && stats.getMoney() == 7500 && stats.getEducation() == 75 && stats.getHappiness() == 2000;
     }
 
     // Getter and Setter
