@@ -1,13 +1,12 @@
 package entity.places;
 
 public class Location {
-    protected PlaceType placeType;
+    protected final PlaceName placeName;
+    protected final int DISTANT;
 
-    public Location(PlaceType placeType){
-        this.placeType = placeType;
+    public Location(PlaceName placeName, int distant){
+        this.placeName = placeName;
+        this.DISTANT = distant;
     }
 
-    public PlaceType getPlaceType() {
-        return placeType;
-    }
 }
