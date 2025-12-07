@@ -57,35 +57,35 @@ public class Player {
 
     // Adjust Player Stats
 
-    private void gainStress(int stress){
+    public void gainStress(int stress){
         stats.setStress(stats.getStress() + stress);
     }
 
-    private void reduceStress(int stress){
+    public void reduceStress(int stress){
         stats.setStress(stats.getStress() - stress);
     }
 
-    private void gainWorkExperience(int workExperience){
+    public void gainWorkExperience(int workExperience){
         stats.setWorkExperience(stats.getWorkExperience() + workExperience);
     }
 
-    private void gainEducation(int education){
+    public void gainEducation(int education){
         stats.setEducation(stats.getEducation() + education);
     }
 
-    private void gainHappiness(int happiness){
+    public void gainHappiness(int happiness){
         stats.setHappiness(stats.getHappiness() + happiness);
     }
 
-    private void reduceHappiness(int happiness){
+    public void reduceHappiness(int happiness){
         stats.setHappiness(stats.getHappiness() - happiness);
     }
 
-    private void gainMoney(int money){
+    public void gainMoney(int money){
         stats.setMoney(stats.getMoney() + money);
     }
 
-    private void reduceMoney(int money){
+    public void reduceMoney(int money){
         stats.setMoney(stats.getMoney() + money);
     }
 
@@ -178,10 +178,6 @@ public class Player {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Stats getStats() {
-        return stats;
     }
 
     public void setStats(Stats stats) {
