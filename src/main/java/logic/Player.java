@@ -180,6 +180,10 @@ public class Player {
         this.name = name;
     }
 
+    public Stats getStats() {
+        return stats;
+    }
+
     public void setStats(Stats stats) {
         this.stats = stats;
     }
