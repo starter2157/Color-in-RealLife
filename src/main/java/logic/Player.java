@@ -1,6 +1,5 @@
 package logic;
 
-import application.Main;
 import entity.places.PlaceName;
 import player.Inventory;
 import entity.jobs.Job;
@@ -56,4 +55,72 @@ public class Player {
     }
 
     // Getter and Setter
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Stats getStats() {
+        return stats;
+    }
+
+    public void setStats(Stats stats) {
+        this.stats = stats;
+    }
+
+    public Job getJob() {
+        return job;
+    }
+
+    public void setJob(Job job) {
+        this.job = job;
+    }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+    }
+
+    public int getTimeUsed() {
+        return timeUsed;
+    }
+
+    public void setTimeUsed(int timeUsed) {
+        this.timeUsed = timeUsed;
+    }
+
+    public City getCityMap() {
+        return cityMap;
+    }
+
+    public void setCityMap(City cityMap) {
+        this.cityMap = cityMap;
+    }
+
+    public PlaceName getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(PlaceName currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
+    public Transportation getTransportation() {
+        return transportation;
+    }
+
+    public void setTransportation(Transportation transportation) {
+        this.transportation = transportation;
+    }
+
+    public int getMAX_TIME_PER_TURN() {
+        return MAX_TIME_PER_TURN;
+    }
 }
