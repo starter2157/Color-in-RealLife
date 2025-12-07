@@ -15,6 +15,7 @@ public class Player {
     private City cityMap;
     private PlaceName currentLocation;
     private Transportation transportation;
+    private final int MAX_TIME_PER_TURN = 1000;
 
     // Player Initialize
 
@@ -39,8 +40,19 @@ public class Player {
         stats.gainStress(stress);
     }
 
-    public void travel(PlaceName destination){
-        int timeNeed = Math.min()
+    public void startTurn(){
+        while(timeUsed < MAX_TIME_PER_TURN){
+            this.doAction();
+        }
+    }
+
+    public void doAction(){
+
+    }
+
+    public boolean isWin(){
+        if(stats.getMoney() == 1000 && stats.getEducation() == 1000 && stats.getHappiness() == 1000) return true;
+        return false;
     }
 
     // Getter and Setter
