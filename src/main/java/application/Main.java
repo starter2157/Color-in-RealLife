@@ -25,7 +25,16 @@ public class Main extends Application {
         gameState = new GameState(playerCount);
         GameScreen gameScreen = new GameScreen(this, gameState);
         Scene scene = gameScreen.getScene();
+
         primaryStage.setScene(scene);
+
+        // make window exactly match the scene size
+        primaryStage.sizeToScene();
+
+        // FIXED WINDOW SIZE (no resize)
+        primaryStage.setResizable(false);
+
+        primaryStage.show();
     }
 
     // Called from GameScreen when user clicks "Back to Start"

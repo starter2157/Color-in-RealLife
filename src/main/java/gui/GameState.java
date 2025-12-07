@@ -24,6 +24,10 @@ public class GameState {
         return players.get(currentPlayerIndex);
     }
 
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
+    }
+
     public int getRound() {
         return round;
     }
@@ -36,4 +40,3 @@ public class GameState {
         }
     }
 }
-
