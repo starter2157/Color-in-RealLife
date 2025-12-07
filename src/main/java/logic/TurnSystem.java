@@ -8,4 +8,5 @@ public class TurnSystem {
         else if(gameMode.equals(GameMode.LONG)) return 30;
         else return Integer.MAX_VALUE;
     }
+
 }

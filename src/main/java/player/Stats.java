@@ -17,16 +17,6 @@ public class Stats {
         this.money = 200;
     }
 
-    // Method
-
-    public void reduceStress(int amount){
-        setStress(getStress() - amount);
-    }
-
-    public void gainStress(int amount){
-        setStress(getStress() + amount);
-    }
-
     // Getter and Setter
 
     public int getEducation() {

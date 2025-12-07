@@ -1,6 +1,6 @@
 package logic;
 
-import application.Main;
+import entity.places.Location;
 import entity.places.PlaceName;
 import player.Inventory;
 import entity.jobs.Job;
@@ -12,10 +12,11 @@ public class Player {
     private Job job;
     private Inventory inventory;
     private int timeUsed;
+    private double timeReduce;
     private City cityMap;
     private PlaceName currentLocation;
     private Transportation transportation;
-    private final int MAX_TIME_PER_TURN = 1000;
+    private final int MAX_TIME_PER_TURN = 960;
 
     // Player Initialize
 
@@ -27,53 +28,148 @@ public class Player {
         this.timeUsed = 0;
         this.cityMap = new City();
         this.currentLocation = PlaceName.HOME;
-        this.transportation = Transportation.WALK;
+        setTransportation(Transportation.WALK);
     }
 
-    // Player Method
+    // Player Action Method
 
-    public void rest(int amount){
-        stats.reduceStress(amount);
+    public void rest(){
+        useTime(60);
+        reduceStress(1);
     }
 
-    private void work(int amount){
-        stats.setMoney(stats.getMoney() + amount);
-        stats.gainStress(1);
+    public void work(int money){
+        useTime(60);
+        gainMoney(money);
+        gainStress(1);
+        gainWorkExperience(4);
     }
 
-    private void study(){
-        stats.setEducation(stats.getEducation() + 1);
-        stats.gainStress(2);
+    public void study(){
+        useTime(60);
+        gainStress(2);
+        gainEducation(1);
     }
 
-
-
-    private void useTime(int amount){
-        this.timeUsed += amount;
+    public void travel(PlaceName destination){
+        travelTime(destination);
+        setCurrentLocation(destination);
     }
 
-    public void gainStress(int stress){
-        stats.gainStress(stress);
+    // Adjust Player Stats
+
+    private void gainStress(int stress){
+        stats.setStress(stats.getStress() + stress);
     }
+
+    private void reduceStress(int stress){
+        stats.setStress(stats.getStress() - stress);
+    }
+
+    private void gainWorkExperience(int workExperience){
+        stats.setWorkExperience(stats.getWorkExperience() + workExperience);
+    }
+
+    private void gainEducation(int education){
+        stats.setEducation(stats.getEducation() + education);
+    }
+
+    private void gainHappiness(int happiness){
+        stats.setHappiness(stats.getHappiness() + happiness);
+    }
+
+    private void reduceHappiness(int happiness){
+        stats.setHappiness(stats.getHappiness() - happiness);
+    }
+
+    private void gainMoney(int money){
+        stats.setMoney(stats.getMoney() + money);
+    }
+
+    private void reduceMoney(int money){
+        stats.setMoney(stats.getMoney() + money);
+    }
+
+    // Time Management
+
+    private void useTime(int time){
+        this.timeUsed += time;
+    }
+
+    private void travelTime(PlaceName placeName){
+
+    }
+
+    // Turn Management
 
     public void startTurn(){
         while(timeUsed < MAX_TIME_PER_TURN){
             this.doAction();
         }
+        timeUsed = 0;
     }
 
     public void doAction(){
-        // do something
+        // do something depend on user click 1.rest 2.work 3.study 4.travel
+
     }
 
-    // Win Condition
+    /* Win Condition
+    1. Mode Short Requirement (10 Rounds)
+        - money 1200
+        - education 15
+        - happiness 500
+    2. Mode Medium Requirement (20 Rounds)
+        - money 2500
+        - education 25
+        - happiness 750
+    3. Mode Long Requirement (30 Rounds)
+        - money 4500
+        - education 40
+        - happiness 1500
+    4. Mode Marathon Requirement (Till one Player meets requirement)
+        - money 10000
+        - education 82 (learn everything)
+        - happiness 4000 */
 
     public boolean isWin(GameMode gameMode){
-        if(gameMode.equals(GameMode.SHORT) && stats.getMoney() == 1500 && stats.getEducation() == 20 && stats.getHappiness() == 500) return true;
-        else if(gameMode.equals(GameMode.MEDIUM) && stats.getMoney() == 2000 && stats.getEducation() == 35 && stats.getHappiness() == 1000) return true;
-        else if(gameMode.equals(GameMode.LONG) && stats.getMoney() == 4000 && stats.getEducation() == 50 && stats.getHappiness() == 1500) return true;
-        else return gameMode.equals(GameMode.MARATHON) && stats.getMoney() == 7500 && stats.getEducation() == 75 && stats.getHappiness() == 2000;
+        if (gameMode.equals(GameMode.SHORT) &&
+                stats.getMoney() >= 1200 &&
+                stats.getEducation() >= 15 &&
+                stats.getHappiness() >= 500) return true;
+        else if(gameMode.equals(GameMode.MEDIUM) &&
+                stats.getMoney() >= 2500 &&
+                stats.getEducation() >= 25 &&
+                stats.getHappiness() >= 750) return true;
+        else if(gameMode.equals(GameMode.LONG) &&
+                stats.getMoney() >= 4000 &&
+                stats.getEducation() >= 40 &&
+                stats.getHappiness() >= 1500) return true;
+        else return gameMode.equals(GameMode.MARATHON) &&
+                    stats.getMoney() >= 10000 &&
+                    stats.getEducation() >= 82 &&
+                    stats.getHappiness() >= 4000;
     }
 
     // Getter and Setter
+
+    public void setTransportation(Transportation transportation){
+        this.transportation = transportation;
+        if(transportation.equals(Transportation.CAR)) setTimeReduce(4);
+        else if(transportation.equals(Transportation.BICYCLE)) setTimeReduce(1.5);
+        else if(transportation.equals(Transportation.BUS)) setTimeReduce(2);
+        else setTimeReduce(1);
+    }
+
+    public void setTimeReduce(double timeReduce){
+        this.timeReduce = timeReduce;
+    }
+
+    public void setCurrentLocation(PlaceName placeName){
+        this.currentLocation = placeName;
+    }
+
+    public Stats getStats() {
+        return stats;
+    }
 }

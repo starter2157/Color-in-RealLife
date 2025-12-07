@@ -1,48 +1,42 @@
 package logic;
 
-import java.util.ArrayList;
+import player.Stats;
+
 import java.util.List;
 
 public class GameLogic {
-    private List<Player> players = new ArrayList<Player>();
     private int currentTurn;
     private int maxTurn;
     private boolean isLastTurn;
-    private GameMode gameMode;
-    private int playerAmount;
-
-    // Set Player amount and GameMode
-
-    public void init(int playerAmount, GameMode gameMode){
-        this.gameMode = gameMode;
-        this.playerAmount = playerAmount;
-        for (int i = 1; i <= playerAmount; i++) {
-            players.add(new Player("Player" + i));
-        }
-        this.maxTurn = TurnSystem.getMaxTurn(gameMode);
-        this.currentTurn = 0;
-    }
 
     // Start Game
 
-    public void start(){
-        while(!isLastTurn){
+    public void startGame(List<Player> players, GameMode gameMode){
+        this.currentTurn = 0;
+        this.maxTurn = TurnSystem.getMaxTurn(gameMode);
+        while(!isLastTurn && currentTurn == maxTurn - 1){
             boolean isPlayerWin = false;
             for(Player player : players){
                 player.startTurn();
                 isPlayerWin = player.isWin(gameMode);
             }
+            this.currentTurn += 1;
             if(isPlayerWin) isLastTurn = true;
         }
-        for(Player player : players){
-            player.startTurn();
-        }
-        pointCalculate();
+        players.forEach(Player::startTurn);
+        findWinner(players);
     }
 
     // Point Calculation Method
 
-    public void pointCalculate(){
-
+    public void findWinner(List<Player> players){
+        int maxPoint = -1;
+        int playerPoint = 0;
+        for (Player player : players){
+            Stats playerStats = player.getStats();
+            playerPoint += playerStats.getEducation();
+            playerPoint += playerStats.getHappiness();
+            playerPoint += playerStats.getMoney();
+        }
     }
 }
