@@ -87,7 +87,7 @@ public class WorkplaceScreen {
             Player p = gameState.getCurrentPlayer();
 
             // TODO: เติม logic จริง เช่น เพิ่ม happiness / ลดเงิน / ใช้เทิร์น ฯลฯ
-            // p.getStats().increaseHappiness(10);
+            p.work();
 
             statusLabel.setText(p.getName() + " ทำงานเรียบร้อย!");
         });

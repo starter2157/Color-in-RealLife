@@ -4,6 +4,6 @@ import logic.Player;
 
 public interface Workable {
 
-    int work(Player player);
+    void work(Player player);
 
 }
