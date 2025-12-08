@@ -4,7 +4,7 @@ import gui.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import logic.GameMode;
+import entity.base.GameMode;
 import logic.Player;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package gui;
 
-import logic.GameMode;
+import entity.base.GameMode;
 import logic.Player;
 import logic.TurnSystem;
 import player.Stats;

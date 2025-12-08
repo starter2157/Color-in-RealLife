@@ -1,9 +1,11 @@
 package entity.jobs;
 
+import entity.base.JobType;
+
 public class Junior extends Job{
 
     public Junior(){
-        super(JobType.JUNIOR, 6);
+        super(JobType.JUNIOR, 48);
     }
 
 }

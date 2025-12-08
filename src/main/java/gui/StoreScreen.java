@@ -1,6 +1,7 @@
 package gui;
 
 import application.Main;
+import entity.items.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -90,19 +91,19 @@ public class StoreScreen {
         // helper สร้างการ์ดสินค้า
         // imagePath: path รูป, name: ชื่อสินค้า, price: ราคา, row/col: ตำแหน่งใน grid
         addItemCard(grid, 0, 0,
-                "/storeItem/fries.png", "Fries", 64,
+                "/storeItem/fries.png", new Fries(),
                 current, moneyLabel, statusLabel);
 
         addItemCard(grid, 1, 0,
-                "/storeItem/burger.png", "Burger", 120,
+                "/storeItem/burger.png", new Burger(),
                 current, moneyLabel, statusLabel);
 
         addItemCard(grid, 0, 1,
-                "/storeItem/set.png", "Set of Meal", 227,
+                "/storeItem/set.png", new BigMeal(),
                 current, moneyLabel, statusLabel);
 
         addItemCard(grid, 1, 1,
-                "/storeItem/lottery.png", "Lottery", 120,
+                "/storeItem/lottery.png", new Lottery(),
                 current, moneyLabel, statusLabel);
 
         VBox centerBox = new VBox(10, grid, statusLabel);
@@ -126,8 +127,7 @@ public class StoreScreen {
     private void addItemCard(GridPane grid,
                              int col, int row,
                              String imagePath,
-                             String name,
-                             int price,
+                             Item item,
                              Player player,
                              Label moneyLabel,
                              Label statusLabel) {
@@ -157,11 +157,11 @@ public class StoreScreen {
         imgView.setFitHeight(150);
         imgView.setPreserveRatio(true);
 
-        Label nameLabel = new Label(name);
+        Label nameLabel = new Label(item.getName());
         nameLabel.setWrapText(true);
         nameLabel.setStyle("-fx-font-size: 14;");
 
-        Label priceLabel = new Label("$" + price);
+        Label priceLabel = new Label("$" + item.getPrice());
         priceLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2e7d32;");
 
         Button buyBtn = new Button("ซื้อ");
@@ -169,19 +169,16 @@ public class StoreScreen {
 
         buyBtn.setOnAction(e -> {
             int money = player.getStats().getMoney();
-            if (money >= price) {
-                // TODO: เติม logic หักเงิน / แก้ stat จริง ๆ ของ player
-                // ตัวอย่างเช่นถ้าคุณมีเมธอด:
-                //   player.getStats().addMoney(-price);
-                //   player.getStats().increaseHappiness(...);
+            if (money >= item.getPrice()) {
+                // Buy Item
+                player.buyItem(item);
 
-                // ตอนนี้ขอแค่โชว์ข้อความและอัพเดต label เงินเฉย ๆ
-                int newMoney = money - price;
+                int newMoney = money - item.getPrice();
                 moneyLabel.setText("Money: $" + newMoney);
-                statusLabel.setText("Buy " + name + " price $" + price + " สำเร็จ (ยังไม่ได้หักเงินจริงใน Stats – TODO)");
+                statusLabel.setText("Buy " + item.getName() + " price $" + item.getPrice() + " สำเร็จ");
 
             } else {
-                statusLabel.setText("เงินไม่พอสำหรับ " + name + " (ต้องการ $" + price + ")");
+                statusLabel.setText("เงินไม่พอสำหรับ " + item.getName() + " (ต้องการ $" + item.getPrice() + ")");
             }
         });
 

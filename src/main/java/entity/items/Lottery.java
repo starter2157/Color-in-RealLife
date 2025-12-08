@@ -1,12 +1,20 @@
 package entity.items;
 
-public class Lottery extends Item {
-    private boolean isGrandPrize;
+import entity.base.Buyable;
+import logic.Player;
+
+public class Lottery extends Item implements Buyable {
+
     private int number;
 
-    public Lottery(int number){
-        super("Lottery");
-        this.setType(ItemType.LOTTERY);
-        this.number = number;
+    public Lottery(){
+        super("Lottery", 50);
+        number = (int)(Math.random() * (100));
+    }
+
+    @Override
+    public void buyItem(Player player){
+        player.getInventory().addItem(new Lottery());
+        player.reduceMoney(getPrice());
     }
 }
