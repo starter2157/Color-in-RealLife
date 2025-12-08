@@ -12,34 +12,30 @@ import static logic.GameLogic.findWinner;
 
 public class GameState {
 
-    private static final List<Player> players = new ArrayList<>();
+    private static GameState instance;
+
+    private List<Player> players;
+    private int currentPlayerIndex = 0;
+
     private GameMode gameMode;
     private int currentTurn = 1;
     private int maxTurn;
     private boolean isLastTurn = false;
-    private int currentPlayerIndex = 0;
 
-    public GameState(int playerCount, GameMode gameMode) {
-        for (int i = 1; i <= playerCount; i++) {
-            players.add(new Player("Player " + i));
-        }
+    public GameState(List<Player> players, GameMode gameMode) {
+        this.players = players;
+        this.currentPlayerIndex = 0;
         this.gameMode = gameMode;
         this.maxTurn = TurnSystem.getMaxTurn(gameMode);
-        while(!(isLastTurn && currentPlayerIndex == 0) && currentTurn == maxTurn - 1){
-            nextTurn();
-        }
-
-        // final turn
-
-        for(int i=0; i<players.size(); i++){
-            nextTurn();
-        }
-
-        GameLogic.findWinner(players);
+        instance = this;
     }
 
     public static List<Player> getPlayers() {
-        return players;
+        return instance.players;
+    }
+
+    public static GameState getInstance() {
+        return instance;
     }
 
     public Player getCurrentPlayer() {

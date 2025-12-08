@@ -7,6 +7,10 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import logic.GameMode;
+import logic.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main extends Application {
 
@@ -23,7 +27,11 @@ public class Main extends Application {
 
     // Called from StartScreen when user clicks "Start Game"
     public void startNewGame(int playerCount) {
-        gameState = new GameState(playerCount, GameMode.MEDIUM);
+        List<Player> players = new ArrayList<>();
+        for (int i = 1; i <= playerCount; i++) {
+            players.add(new Player("Player " + i));
+        }
+        gameState = new GameState(players, GameMode.MEDIUM);
         GameScreen gameScreen = new GameScreen(this, gameState);
         Scene scene = gameScreen.getScene();
 
