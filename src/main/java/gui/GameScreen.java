@@ -147,7 +147,7 @@ public class GameScreen {
         btnWorkplace.setOnAction(e -> moveCurrentPlayerTo(PlaceName.WORKPLACE));
 
         btnEndTurn.setOnAction(e -> {
-            gameState.nextTurn();
+            gameState.nextPlayerIndex();
             refreshUI();
         });
 
@@ -233,7 +233,12 @@ public class GameScreen {
         HBox moneyRow = statRow("/icons/money.png", " " + p.getStats().getMoney());
         HBox happyRow = statRow("/icons/happy.png", " " + p.getStats().getHappiness());
 
-        box.getChildren().addAll(portrait, name, moneyRow, happyRow);
+        Label timeLabel = new Label(
+                "Time: " + p.getRemainingTime() + " / " + p.getMaxTimePerTurn()
+        );
+        timeLabel.setStyle("-fx-text-fill: white;");
+
+        box.getChildren().addAll(portrait, name, moneyRow, happyRow, timeLabel);
         return box;
     }
 
@@ -269,6 +274,8 @@ public class GameScreen {
         Point2D toPt = locationPoints.get(destination);
         ImageView token = playerTokens.get(idx);
 
+        player.travel(destination);
+
         Timeline timeline = new Timeline(
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(token.layoutXProperty(), fromPt.getX()),
@@ -280,8 +287,11 @@ public class GameScreen {
                 )
         );
         timeline.play();
+        if(player.getTimeUsed() > player.getMAX_TIME_PER_TURN()){
+            gameState.nextTurn();
+            refreshUI();
+        }
 
-        player.setCurrentLocation(destination);
     }
 
     private static void updateTokenVisibility() {

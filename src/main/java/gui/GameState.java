@@ -15,7 +15,7 @@ public class GameState {
     private static GameState instance;
 
     private List<Player> players;
-    private int currentPlayerIndex = 0;
+    private int currentPlayerIndex;
 
     private GameMode gameMode;
     private int currentTurn = 1;
@@ -51,14 +51,17 @@ public class GameState {
     }
 
     public void nextTurn() {
+        nextPlayerIndex();
         GameLogic.nextPlayerTurn(players.get(currentPlayerIndex));
         isLastTurn = players.get(currentTurn).isWin(gameMode);
         GameScreen.refreshUI();
+    }
+
+    public void nextPlayerIndex(){
         currentPlayerIndex++;
         if (currentPlayerIndex >= players.size()) {
             currentPlayerIndex = 0;
             currentTurn++;
         }
-
     }
 }

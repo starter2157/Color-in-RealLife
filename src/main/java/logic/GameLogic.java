@@ -6,6 +6,7 @@ import java.util.List;
 
 public class GameLogic {
 
+    private static final int MOVE_TIME_COST = 200;
     //Next Player Turn Method
 
     public static void nextPlayerTurn(Player player){

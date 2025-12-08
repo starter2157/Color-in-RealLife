@@ -58,7 +58,7 @@ public class Player {
     }
 
     public void travel(PlaceName destination){
-        travelTime(destination);
+        useTime(480);
         setCurrentLocation(destination);
     }
 
@@ -99,30 +99,28 @@ public class Player {
     // Time Management
 
     private void useTime(int time){
-        this.timeUsed += time;
+        if (time < 0) return;
+        this.timeUsed = Math.min(MAX_TIME_PER_TURN, timeUsed + time);
     }
 
-    private void travelTime(PlaceName placeName){
+    public int getRemainingTime(){
+        return MAX_TIME_PER_TURN - timeUsed;
+    }
 
+    public int getMaxTimePerTurn(){
+        return MAX_TIME_PER_TURN;
     }
 
     // Turn Management
 
     public void startTurn(){
-        while(timeUsed < MAX_TIME_PER_TURN){
-            this.doAction();
-        }
+        this.setTimeUsed(0);
+        if(!isEat) setTimeUsed(120);
+        else setEat(false);
     }
 
     public void endTurn(){
         this.setCurrentLocation(PlaceName.HOME);
-        this.setTimeUsed(0);
-        if(!isEat) setTimeUsed(120);
-    }
-
-    public void doAction(){
-        // do something depend on user click 1.rest 2.work 3.study 4.travel
-
     }
 
     /* Win Condition
