@@ -1,14 +1,11 @@
 package gui;
 
-// package game; // <- add or remove depending on your project
 import application.Main;
 import entity.places.PlaceName;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,7 +14,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import logic.Player;
@@ -34,13 +30,12 @@ public class GameScreen {
     private Scene scene;
 
     private ImageView mapView;
-    private Pane mapLayer; // map + player tokens
 
     // map locations and tokens
     private Map<PlaceName, Point2D> locationPoints = new HashMap<>();
     private List<ImageView> playerTokens = new ArrayList<>();
 
-    // 4 corner HUD panels
+    // 4 HUD panels
     private VBox p1Panel, p2Panel, p3Panel, p4Panel;
 
     private static final String PANEL_BASE_STYLE =
@@ -61,27 +56,30 @@ public class GameScreen {
 
     private Scene createScene() {
 
-        // ========== MAP LAYER (background + tokens) ==========
+        // ===== ROOT PANE (fixed 1080x720) =====
+        Pane root = new Pane();
+        root.setPrefSize(1080, 720);
+
+        // ===== MAP IMAGE =====
         Image mapImage = new Image(
                 getClass().getResource("/city_map.png").toExternalForm()
         );
         mapView = new ImageView(mapImage);
-        mapView.setPreserveRatio(true);
-        mapView.setSmooth(true);
         mapView.setFitWidth(1080);
         mapView.setFitHeight(720);
+        mapView.setPreserveRatio(false); // เน้นให้เต็มฉาก
 
-        mapLayer = new Pane();
-        mapLayer.getChildren().add(mapView);
+        // add map first (ล่างสุด)
+        root.getChildren().add(mapView);
 
-        // approximate coordinates on a 1280x720 map (tweak as you like)
-        locationPoints.put(PlaceName.HOME,         new Point2D(240, 300));
-        locationPoints.put(PlaceName.STORE,          new Point2D(260, 560));
-        locationPoints.put(PlaceName.THEATRE, new Point2D(820, 520));
-        locationPoints.put(PlaceName.SCHOOL,    new Point2D(640, 140));
-        locationPoints.put(PlaceName.WORKPLACE,     new Point2D(980, 280));
+        // ===== LOCATION COORDINATES (ปรับได้ตามแผนที่ของคุณ) =====
+        locationPoints.put(PlaceName.HOME,       new Point2D(240, 300));
+        locationPoints.put(PlaceName.STORE,      new Point2D(260, 560));
+        locationPoints.put(PlaceName.THEATRE,    new Point2D(820, 520));
+        locationPoints.put(PlaceName.SCHOOL,     new Point2D(640, 140));
+        locationPoints.put(PlaceName.WORKPLACE,  new Point2D(980, 280));
 
-        // one token per player (small portrait)
+        // ===== PLAYER TOKENS (ไอคอนเดินบนแผนที่) =====
         List<Player> players = gameState.getPlayers();
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
@@ -100,87 +98,109 @@ public class GameScreen {
             token.setLayoutY(pt.getY());
 
             playerTokens.add(token);
-            mapLayer.getChildren().add(token);
+            root.getChildren().add(token);  // อยู่เหนือ map
         }
 
-        // root StackPane to layer HUD on top of map
-        StackPane root = new StackPane();
-        root.getChildren().add(mapLayer);
+        // ===== LOCATION BUTTONS วางบนจุดในแผนที่ =====
+        String locationBtnStyle =
+                "-fx-background-color: rgba(0,0,0,0.4);"
+                        + "-fx-text-fill: white;"
+                        + "-fx-background-radius: 8;"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-padding: 4 8;";
 
-        // ========== HUD: 4 corner panels ==========
+        Button btnHome  = new Button("Home");
+        Button btnStore = new Button("Store");
+        Button btnThea  = new Button("Theatre");
+        Button btnSch   = new Button("School");
+        Button btnWork  = new Button("Workplace");
 
+        btnHome.setStyle(locationBtnStyle);
+        btnStore.setStyle(locationBtnStyle);
+        btnThea.setStyle(locationBtnStyle);
+        btnSch.setStyle(locationBtnStyle);
+        btnWork.setStyle(locationBtnStyle);
+
+        placeButtonAt(btnHome,  PlaceName.HOME,      -20, -40);
+        placeButtonAt(btnStore, PlaceName.STORE,     -20, -40);
+        placeButtonAt(btnThea,  PlaceName.THEATRE,   -20, -40);
+        placeButtonAt(btnSch,   PlaceName.SCHOOL,    -20, -40);
+        placeButtonAt(btnWork,  PlaceName.WORKPLACE, -20, -40);
+
+        // add ปุ่มหลัง token → อยู่บนสุดเหนือ map/token
+        root.getChildren().addAll(btnHome, btnStore, btnThea, btnSch, btnWork);
+
+        // action เมื่อคลิกปุ่ม location
+        btnHome.setOnAction(e -> {
+            System.out.println("Button Home clicked");
+            // อยากให้ตัวหมากย้ายไปบ้านก่อนเข้าหน้า Home ก็ทำได้
+            moveCurrentPlayerTo(PlaceName.HOME);
+            // แล้วสลับ scene ไปหน้า HomeScreen
+            app.showHomeScreen(gameState);
+        });
+
+        btnStore.setOnAction(e -> moveCurrentPlayerTo(PlaceName.STORE));
+        btnThea.setOnAction(e -> moveCurrentPlayerTo(PlaceName.THEATRE));
+        btnSch.setOnAction(e -> moveCurrentPlayerTo(PlaceName.SCHOOL));
+        btnWork.setOnAction(e -> moveCurrentPlayerTo(PlaceName.WORKPLACE));
+
+        // ===== HUD PANELS (มุมต่าง ๆ) =====
         p1Panel = makePlayerPanel();
-        StackPane.setAlignment(p1Panel, Pos.TOP_LEFT);
-        StackPane.setMargin(p1Panel, new Insets(15, 0, 0, 15));
-
         p2Panel = makePlayerPanel();
-        StackPane.setAlignment(p2Panel, Pos.TOP_RIGHT);
-        StackPane.setMargin(p2Panel, new Insets(15, 15, 0, 0));
-
         p3Panel = makePlayerPanel();
-        StackPane.setAlignment(p3Panel, Pos.BOTTOM_LEFT);
-        StackPane.setMargin(p3Panel, new Insets(0, 0, 15, 15));
-
         p4Panel = makePlayerPanel();
-        StackPane.setAlignment(p4Panel, Pos.BOTTOM_RIGHT);
-        StackPane.setMargin(p4Panel, new Insets(0, 15, 15, 0));
+
+        // ตำแหน่งคร่าว ๆ (ปรับเลขได้ตามใจ)
+        p1Panel.setLayoutX(20);
+        p1Panel.setLayoutY(20);
+
+        p2Panel.setLayoutX(1080 - 220);
+        p2Panel.setLayoutY(20);
+
+        p3Panel.setLayoutX(20);
+        p3Panel.setLayoutY(720 - 180);
+
+        p4Panel.setLayoutX(1080 - 220);
+        p4Panel.setLayoutY(720 - 180);
 
         root.getChildren().addAll(p1Panel, p2Panel, p3Panel, p4Panel);
 
-        // ========== BOTTOM BUTTONS (movement + turn) ==========
-
-        Button btnCondo = new Button("Home");
-        Button btnMall = new Button("Store");
-        Button btnEnt = new Button("Theatre");
-        Button btnUni = new Button("School");
-        Button btnWork = new Button("Workplace");
+        // ===== ปุ่ม End Turn / Back ด้านล่างกลาง =====
         Button btnEndTurn = new Button("End Turn");
         Button btnBack = new Button("Back");
-
-        btnCondo.setOnAction(e -> moveCurrentPlayerTo(PlaceName.HOME));
-        btnMall.setOnAction(e -> moveCurrentPlayerTo(PlaceName.STORE));
-        btnEnt.setOnAction(e -> moveCurrentPlayerTo(PlaceName.THEATRE));
-        btnUni.setOnAction(e -> moveCurrentPlayerTo(PlaceName.SCHOOL));
-        btnWork.setOnAction(e -> moveCurrentPlayerTo(PlaceName.WORKPLACE));
 
         btnEndTurn.setOnAction(e -> {
             gameState.nextTurn();
             refreshUI();
         });
-
         btnBack.setOnAction(e -> app.showStartScreen());
 
-        HBox moveButtons = new HBox(12, btnCondo, btnMall, btnEnt, btnUni, btnWork);
-        moveButtons.setAlignment(Pos.CENTER);
-        moveButtons.setPadding(new Insets(10));
-
         HBox turnButtons = new HBox(12, btnEndTurn, btnBack);
-        turnButtons.setAlignment(Pos.CENTER);
-        turnButtons.setPadding(new Insets(10));
+        turnButtons.setSpacing(12);
 
-        VBox buttonLayer = new VBox(10, moveButtons, turnButtons);
-        buttonLayer.setAlignment(Pos.BOTTOM_CENTER);
-        buttonLayer.setMouseTransparent(false);
+        // ให้ HBox จัด layout แล้วเราแค่ไปวางทั้งกล่อง
+        turnButtons.applyCss();
+        turnButtons.layout();
+        double turnWidth = turnButtons.prefWidth(-1);
+        double turnHeight = turnButtons.prefHeight(-1);
 
-        StackPane.setAlignment(buttonLayer, Pos.BOTTOM_CENTER);
-        StackPane.setMargin(buttonLayer, new Insets(30));
+        turnButtons.setLayoutX((1080 - turnWidth) / 2);
+        turnButtons.setLayoutY(720 - turnHeight - 10);
 
-        root.getChildren().add(buttonLayer);
+        root.getChildren().add(turnButtons);
 
-        // ========== Scene + resizing behaviour ==========
+        // ===== สร้าง Scene ขนาด fix =====
         scene = new Scene(root, 1080, 720);
-
-        scene.widthProperty().addListener((obs, oldV, newV) ->
-                mapView.setFitWidth(newV.doubleValue())
-        );
-        scene.heightProperty().addListener((obs, oldV, newV) ->
-                mapView.setFitHeight(newV.doubleValue())
-        );
-
         return scene;
     }
 
-    // small helper to build a HUD panel shell
+    private void placeButtonAt(Button btn, PlaceName place, double dx, double dy) {
+        Point2D base = locationPoints.get(place);
+        btn.setLayoutX(base.getX() + dx);
+        btn.setLayoutY(base.getY() + dy);
+    }
+
+    // panel เปล่า ๆ ไว้ใส่ข้อมูลผู้เล่น
     private VBox makePlayerPanel() {
         VBox box = new VBox(5);
         box.setStyle(PANEL_BASE_STYLE);
@@ -189,7 +209,6 @@ public class GameScreen {
         return box;
     }
 
-    // row like: [icon][text]
     private HBox statRow(String iconPath, String text) {
         Image iconImg = new Image(
                 getClass().getResource(iconPath).toExternalForm()
@@ -227,8 +246,10 @@ public class GameScreen {
         Label name = new Label(p.getName());
         name.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16;");
 
-        HBox moneyRow = statRow("/icons/money.png", " " + p.getStats().getMoney());
-        HBox happyRow = statRow("/icons/happy.png", " " + p.getStats().getHappiness());
+        HBox moneyRow = statRow("/icons/money.png",
+                " " + p.getStats().getMoney());
+        HBox happyRow = statRow("/icons/happy.png",
+                " " + p.getStats().getHappiness());
 
         box.getChildren().addAll(portrait, name, moneyRow, happyRow);
         return box;
@@ -254,7 +275,6 @@ public class GameScreen {
         updateTokenVisibility();
     }
 
-    // animate token + update state
     private void moveCurrentPlayerTo(PlaceName dest) {
         int idx = gameState.getCurrentPlayerIndex();
         Player player = gameState.getCurrentPlayer();
@@ -287,5 +307,4 @@ public class GameScreen {
             playerTokens.get(i).setVisible(i == current);
         }
     }
-
 }
