@@ -1,5 +1,6 @@
 package entity.jobs;
 
+import entity.base.JobType;
 import entity.base.Workable;
 import logic.Player;
 

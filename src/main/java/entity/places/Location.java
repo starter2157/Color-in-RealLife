@@ -1,5 +1,7 @@
 package entity.places;
 
+import entity.base.PlaceName;
+
 public class Location {
     protected final PlaceName placeName;
 

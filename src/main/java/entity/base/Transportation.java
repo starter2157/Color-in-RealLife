@@ -1,8 +1,7 @@
-package logic;
+package entity.base;
 
 public enum Transportation {
     WALK,
-    BICYCLE,
-    BUS,
+    SCOOTER,
     CAR
 }

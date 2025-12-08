@@ -69,7 +69,10 @@ public class HomeScreen {
         Label happyLabel = new Label("ความสุข: " + current.getStats().getHappiness());
         happyLabel.setStyle("-fx-text-fill: white;");
 
-        leftPanel.getChildren().addAll(nameLabel, moneyLabel, happyLabel);
+        Label timeUsedLabel = new Label("เวลา: " + current.getRemainingTime() + "/" + current.getMAX_TIME_PER_TURN());
+        happyLabel.setStyle("-fx-text-fill: white;");
+
+        leftPanel.getChildren().addAll(nameLabel, moneyLabel, happyLabel, timeUsedLabel);
         ui.setLeft(leftPanel);
 
         // กลางล่างขวา: ปุ่ม Rest + สเตตัสข้อความ
@@ -89,7 +92,10 @@ public class HomeScreen {
             // TODO: เติม logic จริง เช่น เพิ่ม happiness / ลดเงิน / ใช้เทิร์น ฯลฯ
             p.rest();
 
+            timeUsedLabel.setText("เวลา: " + current.getRemainingTime() + "/" + current.getMAX_TIME_PER_TURN());
+
             statusLabel.setText(p.getName() + " พักผ่อนเรียบร้อยแล้ว!");
+
         });
 
         restBox.getChildren().addAll(btnRest, statusLabel);

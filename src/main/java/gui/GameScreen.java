@@ -1,7 +1,7 @@
 package gui;
 
 import application.Main;
-import entity.places.PlaceName;
+import entity.base.PlaceName;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;

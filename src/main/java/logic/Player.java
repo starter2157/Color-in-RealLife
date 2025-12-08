@@ -1,7 +1,10 @@
 package logic;
 
-import entity.jobs.JobType;
-import entity.places.PlaceName;
+import entity.base.GameMode;
+import entity.base.Transportation;
+import entity.items.Item;
+import entity.base.JobType;
+import entity.base.PlaceName;
 import player.Inventory;
 import player.Stats;
 
@@ -11,11 +14,12 @@ public class Player {
     private JobType jobType;
     private Inventory inventory;
     private int timeUsed;
-    private double timeReduce;
+    private int timeReduce;
     private PlaceName currentLocation;
     private Transportation transportation;
-    private final int MAX_TIME_PER_TURN = 600;
-    private boolean isEat;
+    private final int MAX_TIME_PER_TURN = 720;
+    private boolean isEat = false;
+    private boolean isRest = false;
 
     // Player Initialize
 
@@ -26,11 +30,14 @@ public class Player {
         this.inventory = new Inventory();
         this.timeUsed = 0;
         this.currentLocation = PlaceName.HOME;
-        this.isEat = false;
         setTransportation(Transportation.WALK);
     }
 
     // Player Action Method
+
+    public void buyItem(Item item){
+        item.buyItem(this);
+    }
 
     public void eat(){
         useTime(30);
@@ -38,20 +45,21 @@ public class Player {
     }
 
     public void rest(){
-        useTime(30);
+        useTime(60);
         reduceStress(1);
     }
 
-    public void work(int money){
+    public void work(){
         useTime(60);
-        gainMoney(money);
         gainStress(1);
     }
 
     public void study(){
-        useTime(60);
+        useTime(90);
         gainStress(2);
         gainEducation(1);
+        if(stats.getEducation() >= 32) setJobType(JobType.DIRECTOR);
+        else if(stats.getEducation() >= 20) setJobType(JobType.MANAGER);
     }
 
     // Player Change Location Method
@@ -107,7 +115,7 @@ public class Player {
     }
 
     public void reduceMoney(int money){
-        stats.setMoney(stats.getMoney() + money);
+        stats.setMoney(stats.getMoney() - money);
     }
 
     // Time Management
@@ -129,7 +137,7 @@ public class Player {
 
     public void startTurn(boolean isFirstTurn){
         this.setTimeUsed(0);
-        if(!isEat && !isFirstTurn) useTime(120);
+        if(!isEat() && !isFirstTurn) useTime(80);
         else setEat(false);
     }
 
@@ -179,13 +187,12 @@ public class Player {
 
     public void setTransportation(Transportation transportation){
         this.transportation = transportation;
-        if(transportation.equals(Transportation.CAR)) setTimeReduce(4);
-        else if(transportation.equals(Transportation.BICYCLE)) setTimeReduce(1.5);
-        else if(transportation.equals(Transportation.BUS)) setTimeReduce(2);
+        if(getTransportation().equals(Transportation.CAR)) setTimeReduce(4);
+        else if(getTransportation().equals(Transportation.SCOOTER)) setTimeReduce(2);
         else setTimeReduce(1);
     }
 
-    public void setTimeReduce(double timeReduce){
+    public void setTimeReduce(int timeReduce){
         this.timeReduce = timeReduce;
     }
 
@@ -201,14 +208,6 @@ public class Player {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setStats(Stats stats) {
-        this.stats = stats;
-    }
-
     public JobType getJobType() {
         return jobType;
     }
@@ -221,20 +220,12 @@ public class Player {
         return inventory;
     }
 
-    public void setInventory(Inventory inventory) {
-        this.inventory = inventory;
-    }
-
     public int getTimeUsed() {
         return timeUsed;
     }
 
     public void setTimeUsed(int timeUsed) {
         this.timeUsed = timeUsed;
-    }
-
-    public double getTimeReduce() {
-        return timeReduce;
     }
 
     public PlaceName getCurrentLocation() {

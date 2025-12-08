@@ -1,4 +1,4 @@
-package entity.jobs;
+package entity.base;
 
 public enum JobType {
     NEWBIE,
