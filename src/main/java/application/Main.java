@@ -71,6 +71,16 @@ public class Main extends Application {
         primaryStage.setScene(theatre.getScene());
     }
 
+    public void showSchoolScreen(GameState state) {
+        SchoolScreen school = new SchoolScreen(this, state);
+        primaryStage.setScene(school.getScene());
+    }
+
+    public void showWorkplaceScreen(GameState state) {
+        WorkplaceScreen workplace = new WorkplaceScreen(this, state);
+        primaryStage.setScene(workplace.getScene());
+    }
+
 
     public static void main(String[] args) {
         launch(args);
