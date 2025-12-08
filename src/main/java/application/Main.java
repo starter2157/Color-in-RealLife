@@ -1,9 +1,6 @@
 package application;
 
-import gui.GameScreen;
-import gui.GameState;
-import gui.HomeScreen;
-import gui.StartScreen;
+import gui.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -62,6 +59,16 @@ public class Main extends Application {
     public void showHomeScreen(GameState state) {
         HomeScreen home = new HomeScreen(this, state);
         primaryStage.setScene(home.getScene());
+    }
+
+    public void showStoreScreen(GameState state) {
+        StoreScreen store = new StoreScreen(this, state);
+        primaryStage.setScene(store.getScene());
+    }
+
+    public void showTheatreScreen(GameState state) {
+        TheatreScreen theatre = new TheatreScreen(this, state);
+        primaryStage.setScene(theatre.getScene());
     }
 
 

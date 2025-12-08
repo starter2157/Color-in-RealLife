@@ -20,7 +20,7 @@ public class StartScreen {
     }
 
     private Scene createScene() {
-        Label title = new Label("My Board Game");
+        Label title = new Label("ColorRiakSii");
         title.setStyle("-fx-font-size: 28px; -fx-font-weight: bold;");
 
         Label chooseLabel = new Label("Choose number of players:");
@@ -48,7 +48,7 @@ public class StartScreen {
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(20));
 
-        return new Scene(root, 800, 600);
+        return new Scene(root, 1080, 720);
     }
 
     public Scene getScene() {

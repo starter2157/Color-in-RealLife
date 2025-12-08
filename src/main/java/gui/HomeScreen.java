@@ -14,6 +14,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import logic.Player;
 
+import static gui.GameScreen.refreshUI;
+
 public class HomeScreen {
 
     private final Main app;
@@ -95,7 +97,10 @@ public class HomeScreen {
 
         // ล่าง: ปุ่มกลับไปกระดาน
         Button btnBackToCity = new Button("Back to City");
-        btnBackToCity.setOnAction(e -> app.showGameScreen(gameState));
+        btnBackToCity.setOnAction(e -> {
+            refreshUI();
+            app.showGameScreen(gameState);
+        });
 
         VBox bottomBox = new VBox(btnBackToCity);
         bottomBox.setAlignment(Pos.CENTER);
