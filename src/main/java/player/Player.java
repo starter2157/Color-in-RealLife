@@ -1,15 +1,13 @@
-package logic;
+package player;
 
 import entity.base.GameMode;
 import entity.base.Transportation;
 import entity.items.Item;
 import entity.base.PlaceName;
 import entity.jobs.*;
-import player.Inventory;
-import player.Stats;
 
 public class Player {
-    private String name;
+    private final String name;
     private Stats stats;
     private Job job;
     private Inventory inventory;
@@ -19,6 +17,7 @@ public class Player {
     private Transportation transportation;
     private final int MAX_TIME_PER_TURN = 720;
     private boolean isEat = false;
+
 
     // Player Initialize
 
@@ -49,7 +48,7 @@ public class Player {
     }
 
     public void work(){
-        job.work(this);
+        getJob().work(this);
         useTime(60);
     }
 
@@ -243,5 +242,13 @@ public class Player {
 
     public void setEat(boolean eat) {
         isEat = eat;
+    }
+
+    public Job getJob() {
+        return job;
+    }
+
+    public boolean isEndTurn(){
+        return getTimeUsed() >= getMAX_TIME_PER_TURN();
     }
 }

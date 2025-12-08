@@ -1,6 +1,6 @@
 package entity.events;
 
-import logic.Player;
+import player.Player;
 
 public class GetFDataStructure extends RandomEvent{
 

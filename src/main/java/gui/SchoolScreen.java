@@ -1,6 +1,7 @@
 package gui;
 
 import application.Main;
+import entity.base.PlaceName;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -10,10 +11,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
-import logic.Player;
+import logic.GameState;
+import player.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static gui.GameScreen.refreshUI;
 
 /**
  * หน้าจอโรงเรียน (School) ให้ผู้เล่นมา "เรียน" เป็นขั้น ๆ
@@ -31,7 +35,7 @@ public class SchoolScreen {
     private final Scene scene;
 
     private static final int LEVEL_COUNT = 4;
-    private static final int REQUIRED_STUDY_PER_LEVEL = 5;
+    private static final int[] REQUIRED_STUDY_EACH_LEVEL = {5, 7, 10, 12};
     private static final double WIDTH = 1080;
     private static final double HEIGHT = 720;
 
@@ -97,7 +101,14 @@ public class SchoolScreen {
         // ====== BOTTOM: Back ======
         Button backBtn = new Button("Back to City");
         backBtn.setFont(Font.font(16));
-        backBtn.setOnAction(e -> app.showGameScreen(gameState));
+        backBtn.setOnAction(e -> {
+            app.showGameScreen(gameState);
+            Player player = gameState.getCurrentPlayer();
+            if(player.isEndTurn()){
+                GameScreen.resetCurrentPlayerToHome(player.getCurrentLocation());
+                refreshUI();
+            }
+        });
 
         VBox bottomBox = new VBox(backBtn);
         bottomBox.setAlignment(Pos.CENTER);
@@ -145,11 +156,11 @@ public class SchoolScreen {
         Label levelTitle = new Label("Level " + levelNumber);
         levelTitle.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
 
-        Label desc = new Label("เรียนขั้นนี้อย่างน้อย " + REQUIRED_STUDY_PER_LEVEL + " ครั้ง");
+        Label desc = new Label("เรียนขั้นนี้อย่างน้อย " + REQUIRED_STUDY_EACH_LEVEL[levelIndex] + " ครั้ง");
         desc.setStyle("-fx-font-size: 12; -fx-text-fill: #555555;");
         desc.setWrapText(true);
 
-        Label progress = new Label("0 / " + REQUIRED_STUDY_PER_LEVEL);
+        Label progress = new Label("0 / " + REQUIRED_STUDY_EACH_LEVEL[levelIndex]);
         progress.setStyle("-fx-font-size: 14; -fx-text-fill: #333333;");
         progressLabels[levelIndex] = progress;
 
@@ -161,8 +172,8 @@ public class SchoolScreen {
             String key = currentPlayer.getName();
             int[] arr = studyProgressByPlayer.computeIfAbsent(key, k -> new int[LEVEL_COUNT]);
 
-            // ถ้า level นี้ยังไม่ unlock ก็ไม่ให้เรียน
-            if (!isLevelUnlocked(key, levelIndex)) {
+            // ถ้า level นี้ยังไม่ unlock ก็ไม่ให้เรียน or end turn
+            if (!isLevelUnlocked(key, levelIndex) || currentPlayer.isEndTurn()) {
                 return;
             }
 
@@ -170,6 +181,7 @@ public class SchoolScreen {
             arr[levelIndex]++;
 
             // TODO: ใส่ logic เพิ่ม stat / หักเวลา ฯลฯ ได้ตรงนี้
+            currentPlayer.study();
 
             // อัปเดตทุกปุ่มและ progress อีกครั้ง
             refreshLevelUI(currentPlayer);
@@ -183,7 +195,7 @@ public class SchoolScreen {
     private boolean isLevelUnlocked(String playerKey, int levelIndex) {
         int[] arr = studyProgressByPlayer.computeIfAbsent(playerKey, k -> new int[LEVEL_COUNT]);
         if (levelIndex == 0) return true;
-        return arr[levelIndex - 1] >= REQUIRED_STUDY_PER_LEVEL;
+        return arr[levelIndex - 1] >= REQUIRED_STUDY_EACH_LEVEL[levelIndex - 1];
     }
 
     // อัปเดตตัวเลข progress และ enable/disable ปุ่มตามเงื่อนไข
@@ -196,9 +208,9 @@ public class SchoolScreen {
 
             // update progress label
             if (progressLabels[i] != null) {
-                progressLabels[i].setText(count + " / " + REQUIRED_STUDY_PER_LEVEL);
+                progressLabels[i].setText(count + " / " + REQUIRED_STUDY_EACH_LEVEL[i]);
 
-                if (count >= REQUIRED_STUDY_PER_LEVEL) {
+                if (count >= REQUIRED_STUDY_EACH_LEVEL[i]) {
                     progressLabels[i].setStyle(
                             "-fx-font-size: 14;"
                                     + "-fx-text-fill: #2e7d32;"
@@ -221,11 +233,11 @@ public class SchoolScreen {
                 if (i == 0) {
                     unlocked = true;
                 } else {
-                    unlocked = arr[i - 1] >= REQUIRED_STUDY_PER_LEVEL;
+                    unlocked = arr[i - 1] >= REQUIRED_STUDY_EACH_LEVEL[i - 1];
                 }
 
                 // 🔥 ถ้าขั้นนี้เรียนครบแล้ว → disable ปุ่มทันที
-                if (arr[i] >= REQUIRED_STUDY_PER_LEVEL) {
+                if (arr[i] >= REQUIRED_STUDY_EACH_LEVEL[i]) {
                     studyButtons[i].setDisable(true);
                 }
                 else {

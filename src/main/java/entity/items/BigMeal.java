@@ -2,7 +2,7 @@ package entity.items;
 
 import entity.base.Buyable;
 import entity.base.Eatable;
-import logic.Player;
+import player.Player;
 
 public class BigMeal extends Item implements Buyable, Eatable {
 

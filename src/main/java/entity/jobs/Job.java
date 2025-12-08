@@ -1,7 +1,7 @@
 package entity.jobs;
 
 import entity.base.Workable;
-import logic.Player;
+import player.Player;
 
 public class Job implements Workable {
     protected int salary;
@@ -11,7 +11,6 @@ public class Job implements Workable {
     }
 
     public void work (Player player) {
-        player.work();
         player.gainMoney(getSalary());
         player.gainStress(1);
     }

@@ -1,7 +1,7 @@
 package entity.items;
 
 import entity.base.Buyable;
-import logic.Player;
+import player.Player;
 
 public class Valorant extends Item implements Buyable {
 

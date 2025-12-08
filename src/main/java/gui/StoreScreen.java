@@ -11,7 +11,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
-import logic.Player;
+import logic.GameState;
+import player.Player;
+
+import static gui.GameScreen.refreshUI;
 
 public class StoreScreen {
 
@@ -112,7 +115,14 @@ public class StoreScreen {
 
         // ล่าง: ปุ่มกลับเมือง
         Button btnBackToCity = new Button("Back to City");
-        btnBackToCity.setOnAction(e -> app.showGameScreen(gameState));
+        btnBackToCity.setOnAction(e -> {
+            app.showGameScreen(gameState);
+            Player player = gameState.getCurrentPlayer();
+            if(player.isEndTurn()){
+                GameScreen.resetCurrentPlayerToHome(player.getCurrentLocation());
+                refreshUI();
+            }
+        });
 
         VBox bottomBox = new VBox(btnBackToCity);
         bottomBox.setAlignment(Pos.CENTER);
@@ -169,6 +179,10 @@ public class StoreScreen {
 
         buyBtn.setOnAction(e -> {
             int money = player.getStats().getMoney();
+            if (player.isEndTurn()) {
+                statusLabel.setText("Not Enough Time!!!");
+                return;
+            }
             if (money >= item.getPrice()) {
                 // Buy Item
                 player.buyItem(item);

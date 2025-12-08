@@ -3,7 +3,7 @@ package entity.jobs;
 public class Senior extends Job{
 
     public Senior(){
-        super(64);
+        super(66);
     }
 
 }
