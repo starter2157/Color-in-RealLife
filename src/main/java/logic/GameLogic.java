@@ -6,16 +6,6 @@ import java.util.List;
 
 public class GameLogic {
 
-    private static final int MOVE_TIME_COST = 200;
-    //Next Player Turn Method
-
-    public static void nextPlayerTurn(Player player){
-        player.startTurn();
-        // May be update GUI Player Stat part
-        player.endTurn();
-        // GUI player end at home
-    }
-
     // Point Calculation Method
 
     public static String findWinner(List<Player> players){

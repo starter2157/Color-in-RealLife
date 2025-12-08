@@ -51,10 +51,9 @@ public class GameState {
     }
 
     public void nextTurn() {
+        isLastTurn = players.get(currentPlayerIndex).isWin(gameMode);
         nextPlayerIndex();
-        GameLogic.nextPlayerTurn(players.get(currentPlayerIndex));
-        isLastTurn = players.get(currentTurn).isWin(gameMode);
-        GameScreen.refreshUI();
+        players.get(currentPlayerIndex).startTurn();
     }
 
     public void nextPlayerIndex(){

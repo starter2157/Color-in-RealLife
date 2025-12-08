@@ -147,7 +147,7 @@ public class GameScreen {
         btnWorkplace.setOnAction(e -> moveCurrentPlayerTo(PlaceName.WORKPLACE));
 
         btnEndTurn.setOnAction(e -> {
-            gameState.nextPlayerIndex();
+            gameState.nextTurn();
             refreshUI();
         });
 
@@ -287,10 +287,16 @@ public class GameScreen {
                 )
         );
         timeline.play();
-        if(player.getTimeUsed() > player.getMAX_TIME_PER_TURN()){
-            gameState.nextTurn();
+
+        timeline.setOnFinished(e -> {
             refreshUI();
-        }
+
+            if (player.getTimeUsed() >= player.getMAX_TIME_PER_TURN()) {
+                player.endTurn();
+                gameState.nextTurn();
+                refreshUI();  // MUST refresh again AFTER changing current player
+            }
+        });
 
     }
 
