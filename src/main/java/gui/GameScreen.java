@@ -26,17 +26,20 @@ import java.util.Map;
 public class GameScreen {
 
     private final Main app;
-    private final GameState gameState;
+    private static GameState gameState = null;
     private Scene scene;
 
     private ImageView mapView;
 
     // map locations and tokens
     private Map<PlaceName, Point2D> locationPoints = new HashMap<>();
-    private List<ImageView> playerTokens = new ArrayList<>();
+    private static List<ImageView> playerTokens = new ArrayList<>();
 
-    // 4 HUD panels
-    private VBox p1Panel, p2Panel, p3Panel, p4Panel;
+    // 4 corner HUD panels
+    private static VBox p1Panel;
+    private static VBox p2Panel;
+    private static VBox p3Panel;
+    private static VBox p4Panel;
 
     private static final String PANEL_BASE_STYLE =
             "-fx-background-color: rgba(0,0,0,0.55);"
@@ -45,7 +48,7 @@ public class GameScreen {
 
     public GameScreen(Main app, GameState gameState) {
         this.app = app;
-        this.gameState = gameState;
+        GameScreen.gameState = gameState;
         this.scene = createScene();
         refreshUI();
     }
@@ -79,8 +82,8 @@ public class GameScreen {
         locationPoints.put(PlaceName.SCHOOL,     new Point2D(640, 140));
         locationPoints.put(PlaceName.WORKPLACE,  new Point2D(980, 280));
 
-        // ===== PLAYER TOKENS (ไอคอนเดินบนแผนที่) =====
-        List<Player> players = gameState.getPlayers();
+        // one token per player (small portrait)
+        List<Player> players = GameState.getPlayers();
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
 
@@ -209,9 +212,10 @@ public class GameScreen {
         return box;
     }
 
-    private HBox statRow(String iconPath, String text) {
+    // row like: [icon][text]
+    private static HBox statRow(String iconPath, String text) {
         Image iconImg = new Image(
-                getClass().getResource(iconPath).toExternalForm()
+                GameScreen.class.getResource(iconPath).toExternalForm()
         );
         ImageView icon = new ImageView(iconImg);
         icon.setFitWidth(18);
@@ -224,7 +228,7 @@ public class GameScreen {
         return new HBox(6, icon, label);
     }
 
-    private VBox buildPanelForPlayer(Player p, int playerIndex) {
+    private static VBox buildPanelForPlayer(Player p, int playerIndex) {
         VBox box = new VBox(5);
 
         boolean isCurrent = (playerIndex == gameState.getCurrentPlayerIndex());
@@ -236,7 +240,7 @@ public class GameScreen {
 
         String portraitPath = "/icons/p" + (playerIndex + 1) + ".png";
         Image portraitImg = new Image(
-                getClass().getResource(portraitPath).toExternalForm()
+                GameScreen.class.getResource(portraitPath).toExternalForm()
         );
         ImageView portrait = new ImageView(portraitImg);
         portrait.setFitWidth(48);
@@ -251,12 +255,17 @@ public class GameScreen {
         HBox happyRow = statRow("/icons/happy.png",
                 " " + p.getStats().getHappiness());
 
-        box.getChildren().addAll(portrait, name, moneyRow, happyRow);
+        Label timeLabel = new Label(
+                "Time: " + p.getRemainingTime() + " / " + p.getMaxTimePerTurn()
+        );
+        timeLabel.setStyle("-fx-text-fill: white;");
+
+        box.getChildren().addAll(portrait, name, moneyRow, happyRow, timeLabel);
         return box;
     }
 
-    private void refreshUI() {
-        List<Player> players = gameState.getPlayers();
+    public static void refreshUI() {
+        List<Player> players = GameState.getPlayers();
 
         p1Panel.getChildren().clear();
         p2Panel.getChildren().clear();
@@ -275,16 +284,19 @@ public class GameScreen {
         updateTokenVisibility();
     }
 
-    private void moveCurrentPlayerTo(PlaceName dest) {
+    // animate token + update state
+    private void moveCurrentPlayerTo(PlaceName destination) {
         int idx = gameState.getCurrentPlayerIndex();
         Player player = gameState.getCurrentPlayer();
-        PlaceName from = player.getCurrentLocation();
+        PlaceName currentLocation = player.getCurrentLocation();
 
-        if (from == dest) return;
+        if (currentLocation == destination) return;
 
-        Point2D fromPt = locationPoints.get(from);
-        Point2D toPt = locationPoints.get(dest);
+        Point2D fromPt = locationPoints.get(currentLocation);
+        Point2D toPt = locationPoints.get(destination);
         ImageView token = playerTokens.get(idx);
+
+        player.travel(destination);
 
         Timeline timeline = new Timeline(
                 new KeyFrame(Duration.ZERO,
@@ -298,10 +310,19 @@ public class GameScreen {
         );
         timeline.play();
 
-        player.setCurrentLocation(dest);
+        timeline.setOnFinished(e -> {
+            refreshUI();
+
+            if (player.getTimeUsed() >= player.getMAX_TIME_PER_TURN()) {
+                player.endTurn();
+                gameState.nextTurn();
+                refreshUI();  // MUST refresh again AFTER changing current player
+            }
+        });
+
     }
 
-    private void updateTokenVisibility() {
+    private static void updateTokenVisibility() {
         int current = gameState.getCurrentPlayerIndex();
         for (int i = 0; i < playerTokens.size(); i++) {
             playerTokens.get(i).setVisible(i == current);
