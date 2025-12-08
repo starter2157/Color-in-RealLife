@@ -12,7 +12,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import logic.Player;
 
-public class StoreScreen {
+public class TheatreScreen {
 
     private final Main app;
     private final GameState gameState;
@@ -21,7 +21,7 @@ public class StoreScreen {
     private static final double WIDTH = 1080;
     private static final double HEIGHT = 720;
 
-    public StoreScreen(Main app, GameState gameState) {
+    public TheatreScreen(Main app, GameState gameState) {
         this.app = app;
         this.gameState = gameState;
         this.scene = createScene();
