@@ -5,7 +5,6 @@ public class Stats {
     private int stress;
     private int happiness;
     private int money;
-    private int workExperience;
 
     // Stats Initialize
 
@@ -13,7 +12,6 @@ public class Stats {
         this.education = 0;
         this.stress = 0;
         this.happiness = 0;
-        this.workExperience = 0;
         this.money = 200;
     }
 
@@ -52,11 +50,4 @@ public class Stats {
         this.money = Math.max(0, money);
     }
 
-    public int getWorkExperience() {
-        return workExperience;
-    }
-
-    public void setWorkExperience(int workExperience) {
-        this.workExperience = Math.max(0, workExperience);
-    }
 }

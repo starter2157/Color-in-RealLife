@@ -2,11 +2,9 @@ package entity.places;
 
 public class Location {
     protected final PlaceName placeName;
-    protected final int DISTANT;
 
-    public Location(PlaceName placeName, int distant){
+    public Location(PlaceName placeName){
         this.placeName = placeName;
-        this.DISTANT = distant;
     }
 
 }
