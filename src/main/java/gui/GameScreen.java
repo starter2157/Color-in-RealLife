@@ -155,11 +155,19 @@ public class GameScreen {
         });
 
         btnThea.setOnAction(e -> {
-            System.out.println("Button Store clicked");
+            System.out.println("Button Theatre clicked");
             moveCurrentPlayerTo(PlaceName.THEATRE, () -> app.showTheatreScreen(gameState));
         });
-        btnSch.setOnAction(e -> moveCurrentPlayerTo(PlaceName.SCHOOL));
-        btnWork.setOnAction(e -> moveCurrentPlayerTo(PlaceName.WORKPLACE));
+
+        btnSch.setOnAction(e -> {
+            System.out.println("Button School clicked");
+            moveCurrentPlayerTo(PlaceName.SCHOOL, () -> app.showSchoolScreen(gameState));
+        });
+
+        btnWork.setOnAction(e -> {
+            System.out.println("Button Workplace clicked");
+            moveCurrentPlayerTo(PlaceName.WORKPLACE, () -> app.showWorkplaceScreen(gameState));
+        });
 
         // ===== HUD PANELS =====
         p1Panel = makePlayerPanel();
