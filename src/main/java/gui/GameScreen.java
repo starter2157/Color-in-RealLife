@@ -173,7 +173,7 @@ public class GameScreen {
         Button btnBack = new Button("Back");
 
         btnEndTurn.setOnAction(e -> {
-            gameState.nextTurn();
+            gameState.nextPlayerTurn();
             refreshUI();
         });
         btnBack.setOnAction(e -> app.showStartScreen());
@@ -315,7 +315,7 @@ public class GameScreen {
 
             if (player.getTimeUsed() >= player.getMAX_TIME_PER_TURN()) {
                 player.endTurn();
-                gameState.nextTurn();
+                gameState.nextPlayerTurn();
                 refreshUI();  // MUST refresh again AFTER changing current player
             }
         });

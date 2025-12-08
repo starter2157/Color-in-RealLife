@@ -2,8 +2,8 @@ package entity.places;
 
 public class Workplace extends Location {
 
-    public Workplace(){
-        super(PlaceName.WORKPLACE, 40);
+    public Workplace() {
+        super(PlaceName.WORKPLACE);
     }
 
 }

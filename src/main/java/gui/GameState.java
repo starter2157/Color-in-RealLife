@@ -1,14 +1,11 @@
 package gui;
 
-import logic.GameLogic;
 import logic.GameMode;
 import logic.Player;
 import logic.TurnSystem;
+import player.Stats;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static logic.GameLogic.findWinner;
 
 public class GameState {
 
@@ -21,6 +18,7 @@ public class GameState {
     private int currentTurn = 1;
     private int maxTurn;
     private boolean isLastTurn = false;
+    private boolean isFirstTurn = true;
 
     public GameState(List<Player> players, GameMode gameMode) {
         this.players = players;
@@ -50,10 +48,12 @@ public class GameState {
         return currentTurn;
     }
 
-    public void nextTurn() {
+    // Turn Control
+
+    public void nextPlayerTurn() {
         isLastTurn = players.get(currentPlayerIndex).isWin(gameMode);
         nextPlayerIndex();
-        players.get(currentPlayerIndex).startTurn();
+        players.get(currentPlayerIndex).startTurn(isFirstTurn);
     }
 
     public void nextPlayerIndex(){
@@ -61,6 +61,23 @@ public class GameState {
         if (currentPlayerIndex >= players.size()) {
             currentPlayerIndex = 0;
             currentTurn++;
+            isFirstTurn = false;
         }
+    }
+
+    // Point Calculation Method
+
+    public String findWinner(List<Player> players){
+        int maxPoint = -1;
+        int playerPoint = 0;
+        String winner = "Player 1";
+        for (Player player : players){
+            Stats playerStats = player.getStats();
+            playerPoint += playerStats.getEducation();
+            playerPoint += playerStats.getHappiness();
+            playerPoint += playerStats.getMoney();
+            if(playerPoint > maxPoint) winner = player.getName();
+        }
+        return winner;
     }
 }

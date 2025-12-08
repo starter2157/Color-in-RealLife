@@ -1,7 +1,9 @@
 package entity.jobs;
 
 public enum JobType {
-    BUSINESS,
-    TECHNICAL,
-    GENERAL
+    NEWBIE,
+    JUNIOR,
+    SENIOR,
+    MANAGER,
+    DIRECTOR
 }

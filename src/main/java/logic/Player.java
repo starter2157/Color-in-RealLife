@@ -1,21 +1,20 @@
 package logic;
 
+import entity.jobs.JobType;
 import entity.places.PlaceName;
 import player.Inventory;
-import entity.jobs.Job;
 import player.Stats;
 
 public class Player {
     private String name;
     private Stats stats;
-    private Job job;
+    private JobType jobType;
     private Inventory inventory;
     private int timeUsed;
     private double timeReduce;
-    private City cityMap;
     private PlaceName currentLocation;
     private Transportation transportation;
-    private final int MAX_TIME_PER_TURN = 960;
+    private final int MAX_TIME_PER_TURN = 600;
     private boolean isEat;
 
     // Player Initialize
@@ -23,13 +22,12 @@ public class Player {
     public Player(String name){
         this.name = name;
         this.stats = new Stats();
-        this.job = null;
+        this.jobType = JobType.NEWBIE;
         this.inventory = new Inventory();
         this.timeUsed = 0;
-        this.cityMap = new City();
         this.currentLocation = PlaceName.HOME;
         this.isEat = false;
-        setTransportation(Transportation.WALK);
+        setTransportation(Transportation.CAR);
     }
 
     // Player Action Method
@@ -40,7 +38,7 @@ public class Player {
     }
 
     public void rest(){
-        useTime(60);
+        useTime(30);
         reduceStress(1);
     }
 
@@ -48,7 +46,6 @@ public class Player {
         useTime(60);
         gainMoney(money);
         gainStress(1);
-        gainWorkExperience(4);
     }
 
     public void study(){
@@ -57,8 +54,29 @@ public class Player {
         gainEducation(1);
     }
 
+    // Player Change Location Method
+
     public void travel(PlaceName destination){
-        useTime(480);
+        if(currentLocation.equals(PlaceName.HOME) && destination.equals(PlaceName.SCHOOL)) useTime((int)( 40 / timeReduce));
+        else if(currentLocation.equals(PlaceName.HOME) && destination.equals(PlaceName.WORKPLACE)) useTime((int)( 40 / timeReduce));
+        else if(currentLocation.equals(PlaceName.HOME) && destination.equals(PlaceName.STORE)) useTime((int)( 20 / timeReduce));
+        else if(currentLocation.equals(PlaceName.HOME) && destination.equals(PlaceName.THEATRE)) useTime((int)( 30 / timeReduce));
+        else if(currentLocation.equals(PlaceName.STORE) && destination.equals(PlaceName.SCHOOL)) useTime((int)( 60 / timeReduce));
+        else if(currentLocation.equals(PlaceName.STORE) && destination.equals(PlaceName.WORKPLACE)) useTime((int)( 60 / timeReduce));
+        else if(currentLocation.equals(PlaceName.STORE) && destination.equals(PlaceName.HOME)) useTime((int)( 20 / timeReduce));
+        else if(currentLocation.equals(PlaceName.STORE) && destination.equals(PlaceName.THEATRE)) useTime((int)( 30 / timeReduce));
+        else if(currentLocation.equals(PlaceName.THEATRE) && destination.equals(PlaceName.SCHOOL)) useTime((int)( 70 / timeReduce));
+        else if(currentLocation.equals(PlaceName.THEATRE) && destination.equals(PlaceName.WORKPLACE)) useTime((int)( 10 / timeReduce));
+        else if(currentLocation.equals(PlaceName.THEATRE) && destination.equals(PlaceName.STORE)) useTime((int)( 30 / timeReduce));
+        else if(currentLocation.equals(PlaceName.THEATRE) && destination.equals(PlaceName.HOME)) useTime((int)( 30 / timeReduce));
+        else if(currentLocation.equals(PlaceName.SCHOOL) && destination.equals(PlaceName.STORE)) useTime((int)( 60 / timeReduce));
+        else if(currentLocation.equals(PlaceName.SCHOOL) && destination.equals(PlaceName.WORKPLACE)) useTime((int)( 80 / timeReduce));
+        else if(currentLocation.equals(PlaceName.SCHOOL) && destination.equals(PlaceName.HOME)) useTime((int)( 40 / timeReduce));
+        else if(currentLocation.equals(PlaceName.SCHOOL) && destination.equals(PlaceName.THEATRE)) useTime((int)( 70 / timeReduce));
+        else if(currentLocation.equals(PlaceName.WORKPLACE) && destination.equals(PlaceName.STORE)) useTime((int)( 60 / timeReduce));
+        else if(currentLocation.equals(PlaceName.WORKPLACE) && destination.equals(PlaceName.SCHOOL)) useTime((int)( 80 / timeReduce));
+        else if(currentLocation.equals(PlaceName.WORKPLACE) && destination.equals(PlaceName.HOME)) useTime((int)( 40 / timeReduce));
+        else if(currentLocation.equals(PlaceName.WORKPLACE) && destination.equals(PlaceName.THEATRE)) useTime((int)( 10 / timeReduce));
         setCurrentLocation(destination);
     }
 
@@ -70,10 +88,6 @@ public class Player {
 
     public void reduceStress(int stress){
         stats.setStress(stats.getStress() - stress);
-    }
-
-    public void gainWorkExperience(int workExperience){
-        stats.setWorkExperience(stats.getWorkExperience() + workExperience);
     }
 
     public void gainEducation(int education){
@@ -113,13 +127,14 @@ public class Player {
 
     // Turn Management
 
-    public void startTurn(){
+    public void startTurn(boolean isFirstTurn){
         this.setTimeUsed(0);
-        if(!isEat) setTimeUsed(120);
+        if(!isEat && !isFirstTurn) useTime(120);
         else setEat(false);
     }
 
     public void endTurn(){
+        this.setTimeUsed(0);
         this.setCurrentLocation(PlaceName.HOME);
     }
 
@@ -194,12 +209,12 @@ public class Player {
         this.stats = stats;
     }
 
-    public Job getJob() {
-        return job;
+    public JobType getJobType() {
+        return jobType;
     }
 
-    public void setJob(Job job) {
-        this.job = job;
+    public void setJobType(JobType jobType) {
+        this.jobType = jobType;
     }
 
     public Inventory getInventory() {
@@ -220,14 +235,6 @@ public class Player {
 
     public double getTimeReduce() {
         return timeReduce;
-    }
-
-    public City getCityMap() {
-        return cityMap;
-    }
-
-    public void setCityMap(City cityMap) {
-        this.cityMap = cityMap;
     }
 
     public PlaceName getCurrentLocation() {
