@@ -87,7 +87,7 @@ public class HomeScreen {
             Player p = gameState.getCurrentPlayer();
 
             // TODO: เติม logic จริง เช่น เพิ่ม happiness / ลดเงิน / ใช้เทิร์น ฯลฯ
-            // p.getStats().increaseHappiness(10);
+            p.rest();
 
             statusLabel.setText(p.getName() + " พักผ่อนเรียบร้อยแล้ว!");
         });

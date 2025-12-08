@@ -27,7 +27,7 @@ public class Player {
         this.timeUsed = 0;
         this.currentLocation = PlaceName.HOME;
         this.isEat = false;
-        setTransportation(Transportation.CAR);
+        setTransportation(Transportation.WALK);
     }
 
     // Player Action Method
