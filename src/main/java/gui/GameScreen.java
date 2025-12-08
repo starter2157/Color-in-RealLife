@@ -186,7 +186,7 @@ public class GameScreen {
         Button btnBack = new Button("Back");
 
         btnEndTurn.setOnAction(e -> {
-            gameState.nextTurn();
+            gameState.nextPlayerTurn();
             // เริ่มเทิร์นใหม่ → ส่งคนถัดไปกลับ HOME
             resetCurrentPlayerToHome();
             refreshUI();
@@ -386,7 +386,7 @@ public class GameScreen {
             // ถ้าใช้เวลาเกินเทิร์น → จบเทิร์น + เปลี่ยนคนเล่น + กลับ HOME
             if (player.getTimeUsed() >= player.getMAX_TIME_PER_TURN()) {
                 player.endTurn();
-                gameState.nextTurn();
+                gameState.nextPlayerTurn();
                 resetCurrentPlayerToHome();
                 refreshUI();
             } else {

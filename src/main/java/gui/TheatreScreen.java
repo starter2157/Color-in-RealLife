@@ -35,7 +35,7 @@ public class TheatreScreen {
         // ====== BG ร้านค้าแบบเต็ม 1080x720 ======
         // TODO: เปลี่ยน path รูปให้ตรงกับของจริง เช่น "/store_bg.png"
         ImageView bg = new ImageView(
-                new Image(getClass().getResource("/store_bg.png").toExternalForm())
+                new Image(getClass().getResource("/theatre_bg.png").toExternalForm())
         );
         bg.setFitWidth(WIDTH);
         bg.setFitHeight(HEIGHT);
@@ -47,7 +47,7 @@ public class TheatreScreen {
         ui.setPadding(new Insets(20));
 
         // บน: title
-        Label title = new Label("Store");
+        Label title = new Label("Theatre");
         title.setStyle("-fx-text-fill: white; -fx-font-size: 28; -fx-font-weight: bold;");
         HBox topBox = new HBox(title);
         topBox.setAlignment(Pos.CENTER);
@@ -90,19 +90,19 @@ public class TheatreScreen {
         // helper สร้างการ์ดสินค้า
         // imagePath: path รูป, name: ชื่อสินค้า, price: ราคา, row/col: ตำแหน่งใน grid
         addItemCard(grid, 0, 0,
-                "/storeItem/fries.png", "Fries", 64,
+                "/theatreItem/f1.png", "F1", 64,
                 current, moneyLabel, statusLabel);
 
         addItemCard(grid, 1, 0,
-                "/storeItem/burger.png", "Burger", 120,
+                "/theatreItem/football.png", "Premiere", 120,
                 current, moneyLabel, statusLabel);
 
         addItemCard(grid, 0, 1,
-                "/storeItem/set.png", "Set of Meal", 227,
+                "/theatreItem/valo.png", "Valorant", 227,
                 current, moneyLabel, statusLabel);
 
         addItemCard(grid, 1, 1,
-                "/storeItem/lottery.png", "Lottery", 120,
+                "/theatreItem/uma.png", "Uma", 120,
                 current, moneyLabel, statusLabel);
 
         VBox centerBox = new VBox(10, grid, statusLabel);
