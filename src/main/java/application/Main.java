@@ -6,6 +6,7 @@ import gui.StartScreen;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import logic.GameMode;
 
 public class Main extends Application {
 
@@ -22,7 +23,7 @@ public class Main extends Application {
 
     // Called from StartScreen when user clicks "Start Game"
     public void startNewGame(int playerCount) {
-        gameState = new GameState(playerCount);
+        gameState = new GameState(playerCount, GameMode.MEDIUM);
         GameScreen gameScreen = new GameScreen(this, gameState);
         Scene scene = gameScreen.getScene();
 

@@ -16,6 +16,7 @@ public class Player {
     private PlaceName currentLocation;
     private Transportation transportation;
     private final int MAX_TIME_PER_TURN = 960;
+    private boolean isEat;
 
     // Player Initialize
 
@@ -27,10 +28,16 @@ public class Player {
         this.timeUsed = 0;
         this.cityMap = new City();
         this.currentLocation = PlaceName.HOME;
+        this.isEat = false;
         setTransportation(Transportation.WALK);
     }
 
     // Player Action Method
+
+    public void eat(){
+        useTime(30);
+        setEat(true);
+    }
 
     public void rest(){
         useTime(60);
@@ -105,7 +112,12 @@ public class Player {
         while(timeUsed < MAX_TIME_PER_TURN){
             this.doAction();
         }
-        timeUsed = 0;
+    }
+
+    public void endTurn(){
+        this.setCurrentLocation(PlaceName.HOME);
+        this.setTimeUsed(0);
+        if(!isEat) setTimeUsed(120);
     }
 
     public void doAction(){
@@ -230,5 +242,13 @@ public class Player {
 
     public int getMAX_TIME_PER_TURN() {
         return MAX_TIME_PER_TURN;
+    }
+
+    public boolean isEat() {
+        return isEat;
+    }
+
+    public void setEat(boolean eat) {
+        isEat = eat;
     }
 }

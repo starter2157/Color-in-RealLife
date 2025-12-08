@@ -1,22 +1,44 @@
 package gui;
 
+import logic.GameLogic;
+import logic.GameMode;
 import logic.Player;
+import logic.TurnSystem;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import static logic.GameLogic.findWinner;
+
 public class GameState {
 
-    private final List<Player> players = new ArrayList<>();
+    private static final List<Player> players = new ArrayList<>();
+    private GameMode gameMode;
+    private int currentTurn = 1;
+    private int maxTurn;
+    private boolean isLastTurn = false;
     private int currentPlayerIndex = 0;
-    private int round = 1;
 
-    public GameState(int playerCount) {
+    public GameState(int playerCount, GameMode gameMode) {
         for (int i = 1; i <= playerCount; i++) {
             players.add(new Player("Player " + i));
         }
+        this.gameMode = gameMode;
+        this.maxTurn = TurnSystem.getMaxTurn(gameMode);
+        while(!(isLastTurn && currentPlayerIndex == 0) && currentTurn == maxTurn - 1){
+            nextTurn();
+        }
+
+        // final turn
+
+        for(int i=0; i<players.size(); i++){
+            nextTurn();
+        }
+
+        GameLogic.findWinner(players);
     }
 
-    public List<Player> getPlayers() {
+    public static List<Player> getPlayers() {
         return players;
     }
 
@@ -28,15 +50,19 @@ public class GameState {
         return currentPlayerIndex;
     }
 
-    public int getRound() {
-        return round;
+    public int getCurrentTurn() {
+        return currentTurn;
     }
 
     public void nextTurn() {
+        GameLogic.nextPlayerTurn(players.get(currentPlayerIndex));
+        isLastTurn = players.get(currentTurn).isWin(gameMode);
+        GameScreen.refreshUI();
         currentPlayerIndex++;
         if (currentPlayerIndex >= players.size()) {
             currentPlayerIndex = 0;
-            round++;
+            currentTurn++;
         }
+
     }
 }
