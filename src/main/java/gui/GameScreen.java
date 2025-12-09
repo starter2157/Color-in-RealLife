@@ -1,9 +1,10 @@
 package gui;
 
 import application.Main;
-import entity.places.PlaceName;
+import entity.base.PlaceName;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
@@ -16,8 +17,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import logic.Player;
+import logic.GameState;
+import player.Player;
 
+import javax.print.attribute.standard.Destination;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,15 +28,15 @@ import java.util.Map;
 
 public class GameScreen {
 
-    private final Main app;
+    private static Main app = null;
     private static GameState gameState = null;
     private Scene scene;
 
     private ImageView mapView;
-    private Pane root;  // ใช้ disable/enable ตอน player เดิน
+    private static Pane root;  // ใช้ disable/enable ตอน player เดิน
 
     // map locations and tokens
-    private Map<PlaceName, Point2D> locationPoints = new HashMap<>();
+    private static Map<PlaceName, Point2D> locationPoints = new HashMap<>();
     private static List<ImageView> playerTokens = new ArrayList<>();
 
     // 4 corner HUD panels
@@ -51,9 +54,7 @@ public class GameScreen {
         this.app = app;
         GameScreen.gameState = gameState;
         this.scene = createScene();
-        //SoundManager.playCityBgm();
-        // ไม่ resetCurrentPlayerToHome ที่นี่แล้ว
-        // เพื่อให้กลับจาก Home/Store แล้ว player อยู่ตำแหน่งเดิม
+
         refreshUI();
     }
 
@@ -201,7 +202,7 @@ public class GameScreen {
         btnEndTurn.setOnAction(e -> {
             gameState.nextPlayerTurn();
             // เริ่มเทิร์นใหม่ → ส่งคนถัดไปกลับ HOME
-            resetCurrentPlayerToHome();
+            resetCurrentPlayerToHome(gameState.getCurrentPlayer().getCurrentLocation());
             refreshUI();
         });
 
@@ -336,28 +337,59 @@ public class GameScreen {
 
 
     // ตอนเริ่มเทิร์นของ current player ให้ย้ายกลับ HOME แบบ instant
-    private void resetCurrentPlayerToHome() {
-        int idx = gameState.getCurrentPlayerIndex();
-        if (idx < 0 || idx >= playerTokens.size()) return;
-
+    public static void resetCurrentPlayerToHome(PlaceName currentLocation) {
         Player player = gameState.getCurrentPlayer();
-        player.setCurrentLocation(PlaceName.HOME);
-
+        Point2D currentPt = locationPoints.get(currentLocation);
         Point2D homePt = locationPoints.get(PlaceName.HOME);
-        if (homePt != null) {
-            ImageView token = playerTokens.get(idx);
+        ImageView token = playerTokens.get(gameState.getCurrentPlayerIndex());
+        if(currentLocation != PlaceName.HOME){
+            Timeline goHome = new Timeline(
+                    new KeyFrame(Duration.ZERO,
+                            new KeyValue(token.layoutXProperty(), currentPt.getX()),
+                            new KeyValue(token.layoutYProperty(), currentPt.getY())
+                    ),
+                    new KeyFrame(Duration.millis(450),
+                            new KeyValue(token.layoutXProperty(), homePt.getX()),
+                            new KeyValue(token.layoutYProperty(), homePt.getY())
+                    )
+            );
+
+            goHome.setOnFinished(ev -> {
+
+                if(gameState.isLastPlayerTurn() && player.isEndTurn()) {
+                    delayScreenChange(() -> getApp().showStartScreen());
+                    Player winner = gameState.findWinner();
+                    // Redirect to end screen
+                }
+
+                // Set logical position to HOME
+                player.setCurrentLocation(PlaceName.HOME);
+
+                // End turn
+                player.endTurn();
+                gameState.nextPlayerTurn();
+
+                refreshUI();
+                root.setDisable(false);
+
+
+            });
+
+            goHome.play();
+        } else if (homePt != null) {
             token.setLayoutX(homePt.getX());
             token.setLayoutY(homePt.getY());
         }
+
     }
 
     // เวอร์ชันเดิม ใช้ในปุ่มธรรมดา
-    private void moveCurrentPlayerTo(PlaceName destination) {
+    public void moveCurrentPlayerTo(PlaceName destination) {
         moveCurrentPlayerTo(destination, null);
     }
 
     // เวอร์ชันใหม่: ส่ง callback มาให้ทำหลังเดินถึงที่หมาย (และยังไม่หมดเทิร์น)
-    private void moveCurrentPlayerTo(PlaceName destination, Runnable onArrive) {
+    private static void moveCurrentPlayerTo(PlaceName destination, Runnable onArrive) {
         int idx = gameState.getCurrentPlayerIndex();
         Player player = gameState.getCurrentPlayer();
         PlaceName currentLocation = player.getCurrentLocation();
@@ -378,7 +410,7 @@ public class GameScreen {
         // ระหว่างเดิน: disable ทั้ง root ห้ามกดปุ่มอื่น
         root.setDisable(true);
 
-        Timeline timeline = new Timeline(
+        Timeline goToDestination = new Timeline(
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(token.layoutXProperty(), fromPt.getX()),
                         new KeyValue(token.layoutYProperty(), fromPt.getY())
@@ -388,21 +420,17 @@ public class GameScreen {
                         new KeyValue(token.layoutYProperty(), toPt.getY())
                 )
         );
-        timeline.play();
+        goToDestination.play();
 
-        timeline.setOnFinished(e -> {
-            // enable ปุ่มกลับมา
-            root.setDisable(false);
+        goToDestination.setOnFinished(e -> {
 
             refreshUI();
 
             // ถ้าใช้เวลาเกินเทิร์น → จบเทิร์น + เปลี่ยนคนเล่น + กลับ HOME
-            if (player.getTimeUsed() >= player.getMAX_TIME_PER_TURN()) {
-                player.endTurn();
-                gameState.nextPlayerTurn();
-                resetCurrentPlayerToHome();
-                refreshUI();
+            if (player.isEndTurn()) {
+                resetCurrentPlayerToHome(destination);
             } else {
+                root.setDisable(false);
                 // ยังอยู่ในเทิร์นเดิม → เรียก callback (เข้า HomeScreen / StoreScreen) ถ้ามี
                 if (onArrive != null) {
                     onArrive.run();
@@ -416,5 +444,50 @@ public class GameScreen {
         for (int i = 0; i < playerTokens.size(); i++) {
             playerTokens.get(i).setVisible(i == current);
         }
+    }
+
+    public static void delayScreenChange(Runnable action) {
+        PauseTransition delay = new PauseTransition(Duration.seconds(2));
+        delay.setOnFinished(e -> action.run());
+        delay.play();
+    }
+
+    public static void showTurnBanner(String turnNumber) {
+
+        // Disable entire screen while showing banner
+        root.setDisable(true);
+
+        Label banner = new Label("Turn " + turnNumber);
+        banner.setStyle(
+                "-fx-font-size: 64px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: black;" +
+                        "-fx-background-color: rgba(135,206,250,0.9);" +  // sky-blue box
+                        "-fx-padding: 20 60;" +
+                        "-fx-background-radius: 20;" +
+                        "-fx-border-color: navy;" +
+                        "-fx-border-width: 4;" +
+                        "-fx-border-radius: 20;"
+        );
+
+        // Center on screen
+        banner.setLayoutX(1080 / 2.0 - 200);
+        banner.setLayoutY(720 / 2.0 - 100);
+
+        root.getChildren().add(banner);
+
+        // Show for 3 seconds then fade out and remove
+        PauseTransition delay = new PauseTransition(Duration.seconds(3));
+
+        delay.setOnFinished(e -> {
+            root.getChildren().remove(banner);
+            root.setDisable(false);  // Re-enable interaction
+        });
+
+        delay.play();
+    }
+
+    public static Main getApp() {
+        return app;
     }
 }

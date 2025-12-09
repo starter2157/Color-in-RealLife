@@ -1,4 +1,4 @@
-package logic;
+package entity.base;
 
 public enum GameMode {
     SHORT,

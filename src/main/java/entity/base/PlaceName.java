@@ -1,4 +1,4 @@
-package entity.places;
+package entity.base;
 
 public enum PlaceName {
     HOME,

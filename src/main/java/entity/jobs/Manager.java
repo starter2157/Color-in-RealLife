@@ -3,7 +3,7 @@ package entity.jobs;
 public class Manager extends Job{
 
     public Manager(){
-        super(JobType.MANAGER, 10);
+        super(88);
     }
 
 }

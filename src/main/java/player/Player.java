@@ -1,36 +1,41 @@
-package logic;
+package player;
 
-import entity.jobs.JobType;
-import entity.places.PlaceName;
-import player.Inventory;
-import player.Stats;
+import entity.base.GameMode;
+import entity.base.Transportation;
+import entity.items.Item;
+import entity.base.PlaceName;
+import entity.jobs.*;
 
 public class Player {
-    private String name;
+    private final String name;
     private Stats stats;
-    private JobType jobType;
+    private Job job;
     private Inventory inventory;
     private int timeUsed;
-    private double timeReduce;
+    private int timeReduce;
     private PlaceName currentLocation;
     private Transportation transportation;
     private final int MAX_TIME_PER_TURN = 600;
-    private boolean isEat;
+    private boolean isEat = false;
+
 
     // Player Initialize
 
     public Player(String name){
         this.name = name;
         this.stats = new Stats();
-        this.jobType = JobType.NEWBIE;
+        this.job = new Newbie();
         this.inventory = new Inventory();
         this.timeUsed = 0;
         this.currentLocation = PlaceName.HOME;
-        this.isEat = false;
-        setTransportation(Transportation.CAR);
+        setTransportation(Transportation.WALK);
     }
 
     // Player Action Method
+
+    public void buyItem(Item item){
+        item.buyItem(this);
+    }
 
     public void eat(){
         useTime(30);
@@ -38,20 +43,23 @@ public class Player {
     }
 
     public void rest(){
-        useTime(30);
+        useTime(60);
         reduceStress(1);
     }
 
-    public void work(int money){
+    public void work(){
+        getJob().work(this);
         useTime(60);
-        gainMoney(money);
-        gainStress(1);
     }
 
     public void study(){
-        useTime(60);
+        useTime(90);
         gainStress(2);
         gainEducation(1);
+        if(stats.getEducation() == 34) setJob(new Director());
+        else if(stats.getEducation() == 22) setJob(new Manager());
+        else if(stats.getEducation() == 12) setJob(new Senior());
+        else if(stats.getEducation() == 5) setJob(new Junior());
     }
 
     // Player Change Location Method
@@ -107,7 +115,7 @@ public class Player {
     }
 
     public void reduceMoney(int money){
-        stats.setMoney(stats.getMoney() + money);
+        stats.setMoney(stats.getMoney() - money);
     }
 
     // Time Management
@@ -129,7 +137,7 @@ public class Player {
 
     public void startTurn(boolean isFirstTurn){
         this.setTimeUsed(0);
-        if(!isEat && !isFirstTurn) useTime(120);
+        if(!isEat() && !isFirstTurn) useTime(80);
         else setEat(false);
     }
 
@@ -179,13 +187,12 @@ public class Player {
 
     public void setTransportation(Transportation transportation){
         this.transportation = transportation;
-        if(transportation.equals(Transportation.CAR)) setTimeReduce(4);
-        else if(transportation.equals(Transportation.BICYCLE)) setTimeReduce(1.5);
-        else if(transportation.equals(Transportation.BUS)) setTimeReduce(2);
+        if(getTransportation().equals(Transportation.CAR)) setTimeReduce(4);
+        else if(getTransportation().equals(Transportation.SCOOTER)) setTimeReduce(2);
         else setTimeReduce(1);
     }
 
-    public void setTimeReduce(double timeReduce){
+    public void setTimeReduce(int timeReduce){
         this.timeReduce = timeReduce;
     }
 
@@ -201,28 +208,12 @@ public class Player {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setStats(Stats stats) {
-        this.stats = stats;
-    }
-
-    public JobType getJobType() {
-        return jobType;
-    }
-
-    public void setJobType(JobType jobType) {
-        this.jobType = jobType;
+    public void setJob(Job job) {
+        this.job = job;
     }
 
     public Inventory getInventory() {
         return inventory;
-    }
-
-    public void setInventory(Inventory inventory) {
-        this.inventory = inventory;
     }
 
     public int getTimeUsed() {
@@ -231,10 +222,6 @@ public class Player {
 
     public void setTimeUsed(int timeUsed) {
         this.timeUsed = timeUsed;
-    }
-
-    public double getTimeReduce() {
-        return timeReduce;
     }
 
     public PlaceName getCurrentLocation() {
@@ -255,5 +242,13 @@ public class Player {
 
     public void setEat(boolean eat) {
         isEat = eat;
+    }
+
+    public Job getJob() {
+        return job;
+    }
+
+    public boolean isEndTurn(){
+        return getTimeUsed() >= getMAX_TIME_PER_TURN();
     }
 }

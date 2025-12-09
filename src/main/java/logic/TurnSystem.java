@@ -1,5 +1,7 @@
 package logic;
 
+import entity.base.GameMode;
+
 public class TurnSystem {
 
     public static int getMaxTurn(GameMode gameMode) {

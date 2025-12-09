@@ -1,6 +1,7 @@
 package gui;
 
 import application.Main;
+import entity.base.PlaceName;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,9 +13,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import logic.Player;
+import logic.GameState;
+import player.Player;
 
-import static gui.GameScreen.refreshUI;
+import static gui.GameScreen.*;
 
 public class HomeScreen {
 
@@ -69,7 +71,10 @@ public class HomeScreen {
         Label happyLabel = new Label("ความสุข: " + current.getStats().getHappiness());
         happyLabel.setStyle("-fx-text-fill: white;");
 
-        leftPanel.getChildren().addAll(nameLabel, moneyLabel, happyLabel);
+        Label timeUsedLabel = new Label("เวลา: " + current.getRemainingTime() + "/" + current.getMAX_TIME_PER_TURN());
+        happyLabel.setStyle("-fx-text-fill: white;");
+
+        leftPanel.getChildren().addAll(nameLabel, moneyLabel, happyLabel, timeUsedLabel);
         ui.setLeft(leftPanel);
 
         // กลางล่างขวา: ปุ่ม Rest + สเตตัสข้อความ
@@ -87,9 +92,16 @@ public class HomeScreen {
             Player p = gameState.getCurrentPlayer();
 
             // TODO: เติม logic จริง เช่น เพิ่ม happiness / ลดเงิน / ใช้เทิร์น ฯลฯ
-            // p.getStats().increaseHappiness(10);
+            if(p.isEndTurn()){
+                statusLabel.setText(p.getName() + " เวลาไม่พอออ!!!");
+            } else {
 
-            statusLabel.setText(p.getName() + " พักผ่อนเรียบร้อยแล้ว!");
+                p.rest();
+
+                timeUsedLabel.setText("เวลา: " + current.getRemainingTime() + "/" + current.getMAX_TIME_PER_TURN());
+
+                statusLabel.setText(p.getName() + " พักผ่อนเรียบร้อยแล้ว!");
+            }
         });
 
         restBox.getChildren().addAll(btnRest, statusLabel);
@@ -98,8 +110,18 @@ public class HomeScreen {
         // ล่าง: ปุ่มกลับไปกระดาน
         Button btnBackToCity = new Button("Back to City");
         btnBackToCity.setOnAction(e -> {
-            refreshUI();
             app.showGameScreen(gameState);
+            Player player = gameState.getCurrentPlayer();
+            if(player.isEndTurn() && gameState.isLastPlayerTurn()){
+                Player winner = gameState.findWinner();
+                delayScreenChange(() -> getApp().showStartScreen()); // Maybe Redirect to End Screen and show winner
+            }
+            if(player.isEndTurn()){
+                player.setCurrentLocation(PlaceName.HOME);
+                player.endTurn();
+                gameState.nextPlayerTurn();
+                refreshUI();
+            }
         });
 
         VBox bottomBox = new VBox(btnBackToCity);

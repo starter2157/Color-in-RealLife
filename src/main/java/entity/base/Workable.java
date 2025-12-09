@@ -1,9 +1,9 @@
 package entity.base;
 
-import logic.Player;
+import player.Player;
 
 public interface Workable {
 
-    int work(Player player);
+    void work(Player player);
 
 }

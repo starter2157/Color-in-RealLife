@@ -6,8 +6,9 @@ import javafx.scene.Scene;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
-import logic.GameMode;
-import logic.Player;
+import entity.base.GameMode;
+import logic.GameState;
+import player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +41,12 @@ public class Main extends Application {
     }
 
     // Called from StartScreen when user clicks "Start Game"
-    public void startNewGame(int playerCount) {
+    public void startNewGame(int playerCount, GameMode gameMode) {
         List<Player> players = new ArrayList<>();
         for (int i = 1; i <= playerCount; i++) {
             players.add(new Player("Player " + i));
         }
-        gameState = new GameState(players, GameMode.MEDIUM);
+        gameState = new GameState(players, gameMode);
         GameScreen gameScreen = new GameScreen(this, gameState);
         Scene scene = gameScreen.getScene();
 
