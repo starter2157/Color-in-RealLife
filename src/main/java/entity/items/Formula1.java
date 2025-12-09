@@ -12,6 +12,6 @@ public class Formula1 extends Item implements Buyable {
     @Override
     public void buyItem(Player player){
         player.reduceMoney(getPrice());
-        player.gainHappiness(5);
+        player.gainHappiness(12);
     }
 }

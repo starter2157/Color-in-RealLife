@@ -10,6 +10,6 @@ public class GetFDataStructure extends RandomEvent{
     }
 
     public void trigger(Player player){
-        player.gainStress(2);
+        // player.reduceHappiness(2);
     }
 }

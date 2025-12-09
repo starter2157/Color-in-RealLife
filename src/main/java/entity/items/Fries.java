@@ -19,7 +19,5 @@ public class Fries extends Item implements Buyable, Eatable {
     @Override
     public  void eat(Player player) {
         player.eat();
-        player.reduceHappiness(1);
-
     }
 }

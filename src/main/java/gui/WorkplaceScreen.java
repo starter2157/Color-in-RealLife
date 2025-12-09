@@ -13,8 +13,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import logic.GameState;
+import logic.TurnSystem;
 import player.Player;
+import player.Stats;
 
+import static gui.GameScreen.gameMode;
 import static gui.GameScreen.refreshUI;
 
 public class WorkplaceScreen {
@@ -64,13 +67,18 @@ public class WorkplaceScreen {
         Label nameLabel = new Label(current.getName());
         nameLabel.setStyle("-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: bold;");
 
-        Label moneyLabel = new Label("เงิน: " + current.getStats().getMoney());
+        Stats playerStats = current.getStats();
+
+        Label moneyLabel = new Label("Money: " + playerStats.getMoney() + " / " + TurnSystem.getMaxMoney(gameMode));
         moneyLabel.setStyle("-fx-text-fill: white;");
-
-        Label happyLabel = new Label("ความสุข: " + current.getStats().getHappiness());
+        Label happyLabel = new Label("Happiness: " + playerStats.getHappiness() + " / " + TurnSystem.getMaxHappiness(gameMode));
         happyLabel.setStyle("-fx-text-fill: white;");
+        Label educationalLabel = new Label("Education Level: " + playerStats.getEducation() + " / " + TurnSystem.getMaxEducation(gameMode));
+        educationalLabel.setStyle("-fx-text-fill: white;");
+        Label timeUsedLabel = new Label("Time: " + current.getRemainingTime() + " / " + current.getMAX_TIME_PER_TURN());
+        timeUsedLabel.setStyle("-fx-text-fill: white;");
 
-        leftPanel.getChildren().addAll(nameLabel, moneyLabel, happyLabel);
+        leftPanel.getChildren().addAll(nameLabel, moneyLabel, happyLabel, educationalLabel, timeUsedLabel);
         ui.setLeft(leftPanel);
 
         // กลางล่างขวา: ปุ่ม Rest + สเตตัสข้อความ
@@ -93,7 +101,8 @@ public class WorkplaceScreen {
             } else {
 
                 p.work();
-
+                moneyLabel.setText("Money: " + current.getStats().getMoney() + " / " + TurnSystem.getMaxMoney(gameMode));
+                timeUsedLabel.setText("Time: " + current.getRemainingTime() + " / " + current.getMAX_TIME_PER_TURN());
                 statusLabel.setText(p.getName() + " ทำงานเรียบร้อยแล้ว!");
             }
         });

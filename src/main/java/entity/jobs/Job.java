@@ -12,7 +12,6 @@ public class Job implements Workable {
 
     public void work (Player player) {
         player.gainMoney(getSalary());
-        player.gainStress(1);
     }
 
     public int getSalary () {

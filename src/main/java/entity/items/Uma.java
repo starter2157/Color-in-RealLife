@@ -12,6 +12,6 @@ public class Uma extends Item implements Buyable {
     @Override
     public void buyItem(Player player){
         player.reduceMoney(getPrice());
-        player.gainHappiness(6);
+        player.gainHappiness(15);
     }
 }

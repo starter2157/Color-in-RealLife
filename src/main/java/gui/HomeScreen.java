@@ -69,13 +69,13 @@ public class HomeScreen {
 
         Stats playerStats = current.getStats();
 
-        Label moneyLabel = new Label("Money: " + playerStats.getMoney() + "/" + TurnSystem.getMaxMoney(gameMode));
+        Label moneyLabel = new Label("Money: " + playerStats.getMoney() + " / " + TurnSystem.getMaxMoney(gameMode));
         moneyLabel.setStyle("-fx-text-fill: white;");
-        Label happyLabel = new Label("Happiness: " + playerStats.getHappiness() + "/" + TurnSystem.getMaxHappiness(gameMode));
+        Label happyLabel = new Label("Happiness: " + playerStats.getHappiness() + " / " + TurnSystem.getMaxHappiness(gameMode));
         happyLabel.setStyle("-fx-text-fill: white;");
-        Label educationalLabel = new Label("Education Level: " + playerStats.getEducation() + "/" + TurnSystem.getMaxEducation(gameMode));
+        Label educationalLabel = new Label("Education Level: " + playerStats.getEducation() + " / " + TurnSystem.getMaxEducation(gameMode));
         educationalLabel.setStyle("-fx-text-fill: white;");
-        Label timeUsedLabel = new Label("Time: " + current.getRemainingTime() + "/" + current.getMAX_TIME_PER_TURN());
+        Label timeUsedLabel = new Label("Time: " + current.getRemainingTime() + " / " + current.getMAX_TIME_PER_TURN());
         timeUsedLabel.setStyle("-fx-text-fill: white;");
 
         leftPanel.getChildren().addAll(nameLabel, moneyLabel, happyLabel, educationalLabel, timeUsedLabel);
@@ -102,7 +102,7 @@ public class HomeScreen {
 
                 p.rest();
 
-                timeUsedLabel.setText("Time: " + current.getRemainingTime() + "/" + current.getMAX_TIME_PER_TURN());
+                timeUsedLabel.setText("Time: " + current.getRemainingTime() + " / " + current.getMAX_TIME_PER_TURN());
 
                 statusLabel.setText(p.getName() + " Rested!");
             }

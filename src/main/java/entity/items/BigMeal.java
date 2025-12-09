@@ -19,7 +19,6 @@ public class BigMeal extends Item implements Buyable, Eatable {
     @Override
     public void eat(Player player){
         player.eat();
-        player.gainHappiness(3);
-        player.reduceStress(1);
+        player.gainHappiness(15);
     }
 }
