@@ -5,7 +5,7 @@ import player.Player;
 
 public class Lottery extends Item implements Buyable {
 
-    private int number;
+    private final int number;
 
     public Lottery(){
         super("Lottery", 50);

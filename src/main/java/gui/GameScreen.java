@@ -35,12 +35,11 @@ public class GameScreen {
     public static GameMode gameMode;
     private Scene scene;
 
-    private ImageView mapView;
     private static Pane root;  // ใช้ disable/enable ตอน player เดิน
 
     // map locations and tokens
-    private static Map<PlaceName, Point2D> locationPoints = new HashMap<>();
-    private static List<ImageView> playerTokens = new ArrayList<>();
+    private static final Map<PlaceName, Point2D> locationPoints = new HashMap<>();
+    private static final List<ImageView> playerTokens = new ArrayList<>();
 
     // 4 corner HUD panels
     private static VBox p1Panel;
@@ -54,10 +53,10 @@ public class GameScreen {
                     + "-fx-background-radius: 10;";
 
     public GameScreen(Main app, GameState gameState, GameMode gameMode) {
-        this.app = app;
+        GameScreen.app = app;
         GameScreen.gameState = gameState;
         this.scene = createScene();
-        this.gameMode = gameMode;
+        GameScreen.gameMode = gameMode;
         refreshUI();
     }
 
@@ -75,7 +74,7 @@ public class GameScreen {
         Image mapImage = new Image(
                 getClass().getResource("/city_map.png").toExternalForm()
         );
-        mapView = new ImageView(mapImage);
+        ImageView mapView = new ImageView(mapImage);
         mapView.setFitWidth(1080);
         mapView.setFitHeight(720);
         mapView.setPreserveRatio(false); // เน้นให้เต็มฉาก
@@ -314,8 +313,8 @@ public class GameScreen {
 
         // 2) มี player กี่คน ก็เปิดเท่านั้นแหละ
 
-        if (players.size() > 0 && p1Panel != null) {
-            p1Panel.getChildren().add(buildPanelForPlayer(players.get(0), 0));
+        if (!players.isEmpty() && p1Panel != null) {
+            p1Panel.getChildren().add(buildPanelForPlayer(players.getFirst(), 0));
             p1Panel.setVisible(true);
             p1Panel.setManaged(true);
         }
