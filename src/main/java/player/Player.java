@@ -1,32 +1,30 @@
-package logic;
+package player;
 
 import entity.base.GameMode;
 import entity.base.Transportation;
 import entity.items.Item;
-import entity.base.JobType;
 import entity.base.PlaceName;
-import player.Inventory;
-import player.Stats;
+import entity.jobs.*;
 
 public class Player {
-    private String name;
+    private final String name;
     private Stats stats;
-    private JobType jobType;
+    private Job job;
     private Inventory inventory;
     private int timeUsed;
     private int timeReduce;
     private PlaceName currentLocation;
     private Transportation transportation;
-    private final int MAX_TIME_PER_TURN = 720;
+    private final int MAX_TIME_PER_TURN = 600;
     private boolean isEat = false;
-    private boolean isRest = false;
+
 
     // Player Initialize
 
     public Player(String name){
         this.name = name;
         this.stats = new Stats();
-        this.jobType = JobType.NEWBIE;
+        this.job = new Newbie();
         this.inventory = new Inventory();
         this.timeUsed = 0;
         this.currentLocation = PlaceName.HOME;
@@ -50,16 +48,18 @@ public class Player {
     }
 
     public void work(){
+        getJob().work(this);
         useTime(60);
-        gainStress(1);
     }
 
     public void study(){
         useTime(90);
         gainStress(2);
         gainEducation(1);
-        if(stats.getEducation() >= 32) setJobType(JobType.DIRECTOR);
-        else if(stats.getEducation() >= 20) setJobType(JobType.MANAGER);
+        if(stats.getEducation() == 34) setJob(new Director());
+        else if(stats.getEducation() == 22) setJob(new Manager());
+        else if(stats.getEducation() == 12) setJob(new Senior());
+        else if(stats.getEducation() == 5) setJob(new Junior());
     }
 
     // Player Change Location Method
@@ -208,12 +208,8 @@ public class Player {
         return name;
     }
 
-    public JobType getJobType() {
-        return jobType;
-    }
-
-    public void setJobType(JobType jobType) {
-        this.jobType = jobType;
+    public void setJob(Job job) {
+        this.job = job;
     }
 
     public Inventory getInventory() {
@@ -246,5 +242,13 @@ public class Player {
 
     public void setEat(boolean eat) {
         isEat = eat;
+    }
+
+    public Job getJob() {
+        return job;
+    }
+
+    public boolean isEndTurn(){
+        return getTimeUsed() >= getMAX_TIME_PER_TURN();
     }
 }

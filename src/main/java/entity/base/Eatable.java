@@ -1,6 +1,6 @@
 package entity.base;
 
-import logic.Player;
+import player.Player;
 
 public interface Eatable {
 

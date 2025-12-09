@@ -12,7 +12,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import logic.Player;
+import logic.GameState;
+import player.Player;
 
 import static gui.GameScreen.refreshUI;
 
@@ -77,29 +78,38 @@ public class WorkplaceScreen {
         restBox.setAlignment(Pos.CENTER_RIGHT);
         restBox.setPadding(new Insets(0, 40, 40, 0));
 
-        Button btnRest = new Button("Work");
-        btnRest.setFont(Font.font(18));
+        Button btnWork = new Button("Work");
+        btnWork.setFont(Font.font(18));
 
         Label statusLabel = new Label("");
         statusLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16;");
 
-        btnRest.setOnAction(e -> {
+        btnWork.setOnAction(e -> {
             Player p = gameState.getCurrentPlayer();
 
             // TODO: เติม logic จริง เช่น เพิ่ม happiness / ลดเงิน / ใช้เทิร์น ฯลฯ
-            // p.getStats().increaseHappiness(10);
+            if(p.isEndTurn()){
+                statusLabel.setText(p.getName() + " เวลาไม่พอออ!!!");
+            } else {
 
-            statusLabel.setText(p.getName() + " ทำงานเรียบร้อย!");
+                p.work();
+
+                statusLabel.setText(p.getName() + " ทำงานเรียบร้อยแล้ว!");
+            }
         });
 
-        restBox.getChildren().addAll(btnRest, statusLabel);
+        restBox.getChildren().addAll(btnWork, statusLabel);
         ui.setRight(restBox);
 
         // ล่าง: ปุ่มกลับไปกระดาน
         Button btnBackToCity = new Button("Back to City");
         btnBackToCity.setOnAction(e -> {
-            refreshUI();
             app.showGameScreen(gameState);
+            Player player = gameState.getCurrentPlayer();
+            if(player.isEndTurn()){
+                GameScreen.resetCurrentPlayerToHome(player.getCurrentLocation());
+                refreshUI();
+            }
         });
 
         VBox bottomBox = new VBox(btnBackToCity);

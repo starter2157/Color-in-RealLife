@@ -1,6 +1,7 @@
 package gui;
 
 import application.Main;
+import entity.items.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -10,7 +11,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
-import logic.Player;
+import logic.GameState;
+import player.Player;
+
+import static gui.GameScreen.refreshUI;
 
 public class TheatreScreen {
 
@@ -90,19 +94,19 @@ public class TheatreScreen {
         // helper สร้างการ์ดสินค้า
         // imagePath: path รูป, name: ชื่อสินค้า, price: ราคา, row/col: ตำแหน่งใน grid
         addItemCard(grid, 0, 0,
-                "/theatreItem/f1.png", "F1", 64,
+                "/theatreItem/f1.png", new Formula1(),
                 current, moneyLabel, statusLabel);
 
         addItemCard(grid, 1, 0,
-                "/theatreItem/football.png", "Premiere", 120,
+                "/theatreItem/football.png", new PremierLeague(),
                 current, moneyLabel, statusLabel);
 
         addItemCard(grid, 0, 1,
-                "/theatreItem/valo.png", "Valorant", 227,
+                "/theatreItem/valo.png", new Valorant(),
                 current, moneyLabel, statusLabel);
 
         addItemCard(grid, 1, 1,
-                "/theatreItem/uma.png", "Uma", 120,
+                "/theatreItem/uma.png", new Uma(),
                 current, moneyLabel, statusLabel);
 
         VBox centerBox = new VBox(10, grid, statusLabel);
@@ -111,7 +115,14 @@ public class TheatreScreen {
 
         // ล่าง: ปุ่มกลับเมือง
         Button btnBackToCity = new Button("Back to City");
-        btnBackToCity.setOnAction(e -> app.showGameScreen(gameState));
+        btnBackToCity.setOnAction(e -> {
+            app.showGameScreen(gameState);
+            Player player = gameState.getCurrentPlayer();
+            if(player.isEndTurn()){
+                GameScreen.resetCurrentPlayerToHome(player.getCurrentLocation());
+                refreshUI();
+            }
+        });
 
         VBox bottomBox = new VBox(btnBackToCity);
         bottomBox.setAlignment(Pos.CENTER);
@@ -126,8 +137,7 @@ public class TheatreScreen {
     private void addItemCard(GridPane grid,
                              int col, int row,
                              String imagePath,
-                             String name,
-                             int price,
+                             Item item,
                              Player player,
                              Label moneyLabel,
                              Label statusLabel) {
@@ -157,11 +167,11 @@ public class TheatreScreen {
         imgView.setFitHeight(150);
         imgView.setPreserveRatio(true);
 
-        Label nameLabel = new Label(name);
+        Label nameLabel = new Label(item.getName());
         nameLabel.setWrapText(true);
         nameLabel.setStyle("-fx-font-size: 14;");
 
-        Label priceLabel = new Label("$" + price);
+        Label priceLabel = new Label("$" + item.getPrice());
         priceLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2e7d32;");
 
         Button buyBtn = new Button("ซื้อ");
@@ -169,19 +179,20 @@ public class TheatreScreen {
 
         buyBtn.setOnAction(e -> {
             int money = player.getStats().getMoney();
-            if (money >= price) {
-                // TODO: เติม logic หักเงิน / แก้ stat จริง ๆ ของ player
-                // ตัวอย่างเช่นถ้าคุณมีเมธอด:
-                //   player.getStats().addMoney(-price);
-                //   player.getStats().increaseHappiness(...);
+            if (player.isEndTurn()) {
+                statusLabel.setText("Not Enough Time!!!");
+                return;
+            }
+            if (money >= item.getPrice()) {
+                // Buy Item
+                player.buyItem(item);
 
-                // ตอนนี้ขอแค่โชว์ข้อความและอัพเดต label เงินเฉย ๆ
-                int newMoney = money - price;
+                int newMoney = money - item.getPrice();
                 moneyLabel.setText("Money: $" + newMoney);
-                statusLabel.setText("Buy " + name + " price $" + price + " สำเร็จ (ยังไม่ได้หักเงินจริงใน Stats – TODO)");
+                statusLabel.setText("Buy " + item.getName() + " price $" + item.getPrice() + " สำเร็จ");
 
             } else {
-                statusLabel.setText("เงินไม่พอสำหรับ " + name + " (ต้องการ $" + price + ")");
+                statusLabel.setText("เงินไม่พอสำหรับ " + item.getName() + " (ต้องการ $" + item.getPrice() + ")");
             }
         });
 
