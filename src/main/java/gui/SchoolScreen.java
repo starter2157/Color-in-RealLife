@@ -36,9 +36,6 @@ public class SchoolScreen {
     private static final double WIDTH = 1080;
     private static final double HEIGHT = 720;
 
-    private final Map<String, int[]> studyProgressByPlayer = new HashMap<>();
-    private final Map<String, boolean[]> paidLevelByPlayer = new HashMap<>();
-
     private Label[] progressLabels = new Label[LEVEL_COUNT];
     private Button[] studyButtons = new Button[LEVEL_COUNT];
 
@@ -55,10 +52,6 @@ public class SchoolScreen {
     private Scene createScene() {
 
         Player current = gameState.getCurrentPlayer();
-        String key = current.getName();
-
-        studyProgressByPlayer.putIfAbsent(key, new int[LEVEL_COUNT]);
-        paidLevelByPlayer.putIfAbsent(key, new boolean[LEVEL_COUNT]);
 
         // ---------- Background ----------
         ImageView bg = new ImageView(new Image(
@@ -207,11 +200,10 @@ public class SchoolScreen {
     //  HANDLE STUDY BUTTON
     // -----------------------------------------------------
     private void handleStudy(int levelIndex, Player player) {
-        String key = player.getName();
-        int[] progress = studyProgressByPlayer.get(key);
-        boolean[] paid = paidLevelByPlayer.get(key);
+        int[] progress = player.getLearningProgress();
+        boolean[] paid = player.getIsPaid();
 
-        if (!isLevelUnlocked(key, levelIndex) || player.isEndTurn()) return;
+        if (!isLevelUnlocked(player, levelIndex) || player.isEndTurn()) return;
 
         // pay registration fee
         if (!paid[levelIndex]) {
@@ -260,10 +252,10 @@ public class SchoolScreen {
     // -----------------------------------------------------
     //  CHECK LEVEL UNLOCK
     // -----------------------------------------------------
-    private boolean isLevelUnlocked(String key, int levelIndex) {
+    private boolean isLevelUnlocked(Player player, int levelIndex) {
         if (levelIndex == 0) return true;
 
-        int[] arr = studyProgressByPlayer.get(key);
+        int[] arr = player.getLearningProgress();
         return arr[levelIndex - 1] >= REQUIRED_STUDY_EACH_LEVEL[levelIndex - 1];
     }
 
@@ -272,7 +264,7 @@ public class SchoolScreen {
     // -----------------------------------------------------
     private void refreshLevelUI(Player player) {
         String key = player.getName();
-        int[] arr = studyProgressByPlayer.get(key);
+        int[] arr = player.getLearningProgress();
 
         for (int i = 0; i < LEVEL_COUNT; i++) {
             int count = arr[i];
