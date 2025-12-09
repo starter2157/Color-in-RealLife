@@ -191,10 +191,10 @@ public class GameScreen {
         p2Panel.setLayoutY(20);
 
         p3Panel.setLayoutX(20);
-        p3Panel.setLayoutY(720 - 180);
+        p3Panel.setLayoutY(720 - 220);
 
         p4Panel.setLayoutX(1080 - 220);
-        p4Panel.setLayoutY(720 - 180);
+        p4Panel.setLayoutY(720 - 220);
 
         root.getChildren().addAll(p1Panel, p2Panel, p3Panel, p4Panel);
 

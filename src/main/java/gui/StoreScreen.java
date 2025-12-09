@@ -109,6 +109,14 @@ public class StoreScreen {
                 "/storeItem/lottery.png", new Lottery(),
                 current, moneyLabel, statusLabel);
 
+        addItemCard(grid, 2, 0,
+                "/storeItem/scooter.png", new Lottery(),
+                current, moneyLabel, statusLabel);
+
+        addItemCard(grid, 2, 1,
+                "/storeItem/car.png", new Lottery(),
+                current, moneyLabel, statusLabel);
+
         VBox centerBox = new VBox(10, grid, statusLabel);
         centerBox.setAlignment(Pos.TOP_CENTER);
         ui.setCenter(centerBox);
