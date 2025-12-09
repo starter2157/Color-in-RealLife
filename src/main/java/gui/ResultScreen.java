@@ -68,9 +68,13 @@ public class ResultScreen {
 
         List<Player> players = GameState.getPlayers();
 
+        for (Player player : players){
+            player.getStats().setPointSummation(gameState.getGameMode());
+        }
+
         // --- SORT BY MONEY DESC ---
         List<Player> ranking = players.stream()
-                .sorted(Comparator.comparingInt(p -> -p.getStats().getMoney()))
+                .sorted(Comparator.comparingInt(p -> -p.getStats().getPointSummation()))
                 .collect(Collectors.toList());
 
         int rank = 1;
@@ -153,11 +157,11 @@ public class ResultScreen {
         Label school = new Label("Education: " + p.getStats().getEducation());
         school.setStyle("-fx-font-size: 18; -fx-text-fill: white;");
 
-        Label time = new Label("Time Used: " + p.getTimeUsed());
-        time.setStyle("-fx-font-size: 18; -fx-text-fill: white;");
+        Label pointSummation = new Label("Point Summation: " + p.getStats().getPointSummation());
+        pointSummation.setStyle("-fx-font-size: 18; -fx-text-fill: white;");
 
 
-        VBox info = new VBox(5, name, money, happy, school, time);
+        VBox info = new VBox(5, name, money, happy, school, pointSummation);
 
         box.getChildren().addAll(rankLabel, portrait, info);
 

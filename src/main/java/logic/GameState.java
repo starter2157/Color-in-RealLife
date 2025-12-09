@@ -11,12 +11,12 @@ public class GameState {
 
     private static GameState instance;
 
-    private List<Player> players;
+    private final List<Player> players;
     private int currentPlayerIndex;
 
-    private GameMode gameMode;
+    private final GameMode gameMode;
     private int currentTurn = 1;
-    private int maxTurn;
+    private final int maxTurn;
     private boolean isLastTurn = false;
     private boolean isPlayerWin = false;
     private boolean isFirstTurn = true;
@@ -90,11 +90,7 @@ public class GameState {
         return isLastPlayerTurn;
     }
 
-    public boolean isLastTurn() {
-        return isLastTurn;
-    }
-
-    public int getCurrentTurn() {
-        return currentTurn;
+    public GameMode getGameMode(){
+        return gameMode;
     }
 }

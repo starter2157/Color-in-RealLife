@@ -424,11 +424,18 @@ public class GameScreen {
             refreshUI();
 
             // ถ้าใช้เวลาเกินเทิร์น → จบเทิร์น + เปลี่ยนคนเล่น + กลับ HOME
-            if (player.isEndTurn()) {
+            if (player.isEndTurn() && player.getCurrentLocation() != PlaceName.HOME) {
                 resetCurrentPlayerToHome(destination);
+            } else if (player.isEndTurn() && player.getCurrentLocation() == PlaceName.HOME){
+                if(gameState.isLastPlayerTurn() && player.isEndTurn()) {
+                    delayScreenChange(() -> app.showResultScreen(gameState));
+                }
+                player.endTurn();
+                gameState.nextPlayerTurn();
+                refreshUI();
+                root.setDisable(false);
             } else {
                 root.setDisable(false);
-                // ยังอยู่ในเทิร์นเดิม → เรียก callback (เข้า HomeScreen / StoreScreen) ถ้ามี
                 if (onArrive != null) {
                     onArrive.run();
                 }

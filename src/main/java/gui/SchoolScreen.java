@@ -29,15 +29,15 @@ public class SchoolScreen {
     private final GameState gameState;
     private final Scene scene;
 
-    private static final int LEVEL_COUNT = 4;
-    private static final int[] REQUIRED_STUDY_EACH_LEVEL = {5, 7, 10, 12};
-    private static final int[] COST_PER_LEVEL = {100, 200, 300, 400};
+    private final int LEVEL_COUNT = 4;
+    private final int[] REQUIRED_STUDY_EACH_LEVEL = {5, 7, 10, 12};
+    private final int[] COST_PER_LEVEL = {100, 200, 300, 400};
 
     private static final double WIDTH = 1080;
     private static final double HEIGHT = 720;
 
-    private static final Map<String, int[]> studyProgressByPlayer = new HashMap<>();
-    private static final Map<String, boolean[]> paidLevelByPlayer = new HashMap<>();
+    private final Map<String, int[]> studyProgressByPlayer = new HashMap<>();
+    private final Map<String, boolean[]> paidLevelByPlayer = new HashMap<>();
 
     private Label[] progressLabels = new Label[LEVEL_COUNT];
     private Button[] studyButtons = new Button[LEVEL_COUNT];
@@ -93,18 +93,9 @@ public class SchoolScreen {
 
         backBtn.setOnAction(e -> {
             app.showGameScreen(gameState);
-
             Player player = gameState.getCurrentPlayer();
-
-            // End turn logic like in HomeScreen
-            if (player.isEndTurn() && gameState.isLastPlayerTurn()) {
-                Player winner = gameState.findWinner();
-                delayScreenChange(() -> getApp().showResultScreen(gameState));
-            }
-            if (player.isEndTurn()) {
-                player.setCurrentLocation(PlaceName.HOME);
-                player.endTurn();
-                gameState.nextPlayerTurn();
+            if(player.isEndTurn()){
+                GameScreen.resetCurrentPlayerToHome(player.getCurrentLocation());
                 refreshUI();
             }
         });
