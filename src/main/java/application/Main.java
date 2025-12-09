@@ -3,6 +3,8 @@ package application;
 import gui.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import entity.base.GameMode;
 import logic.GameState;
@@ -16,12 +18,26 @@ public class Main extends Application {
     private Stage primaryStage;
     private GameState gameState;
 
+    private MediaPlayer cityBgm;
+
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        primaryStage.setTitle("Board Game with Screens");
+        primaryStage.setTitle("Colorrr");
         showStartScreen();
         primaryStage.show();
+
+        // ====== Setup City BGM ======
+        try {
+            Media media = new Media(getClass().getResource("/sounds/bgm_city.mp3").toExternalForm());
+            cityBgm = new MediaPlayer(media);
+            cityBgm.setCycleCount(MediaPlayer.INDEFINITE); // loop
+            cityBgm.setVolume(0.35); // adjust as needed
+            cityBgm.play(); // 🔥 Start once and never stop
+        } catch (Exception e) {
+            System.out.println("Cannot load bgm_city.mp3");
+        }
+
     }
 
     // Called from StartScreen when user clicks "Start Game"
