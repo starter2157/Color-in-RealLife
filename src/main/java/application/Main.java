@@ -23,7 +23,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        primaryStage.setTitle("Colorrr");
+        primaryStage.setTitle("Color in RealLife");
         showStartScreen();
         primaryStage.show();
 
