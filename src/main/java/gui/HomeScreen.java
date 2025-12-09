@@ -117,8 +117,8 @@ public class HomeScreen {
             app.showGameScreen(gameState);
             Player player = gameState.getCurrentPlayer();
             if(player.isEndTurn() && gameState.isLastPlayerTurn()){
-                Player winner = gameState.findWinner();
-                delayScreenChange(() -> getApp().showResultScreen(gameState)); // Maybe Redirect to End Screen and show winner
+                // Redirect to End Screen and show winner
+                delayScreenChange(() -> getApp().showResultScreen(gameState));
             }
             if(player.isEndTurn()){
                 player.setCurrentLocation(PlaceName.HOME);

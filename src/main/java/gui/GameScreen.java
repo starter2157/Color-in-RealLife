@@ -204,7 +204,6 @@ public class GameScreen {
 
         btnEndTurn.setOnAction(e -> {
             gameState.nextPlayerTurn();
-            // เริ่มเทิร์นใหม่ → ส่งคนถัดไปกลับ HOME
             resetCurrentPlayerToHome(gameState.getCurrentPlayer().getCurrentLocation());
             refreshUI();
         });
@@ -361,9 +360,8 @@ public class GameScreen {
             goHome.setOnFinished(ev -> {
 
                 if(gameState.isLastPlayerTurn() && player.isEndTurn()) {
-                    delayScreenChange(() -> app.showResultScreen(gameState));
-                    Player winner = gameState.findWinner();
                     // Redirect to end screen
+                    delayScreenChange(() -> app.showResultScreen(gameState));
                 }
 
                 // Set logical position to HOME

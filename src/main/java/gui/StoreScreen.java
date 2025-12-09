@@ -118,11 +118,11 @@ public class StoreScreen {
                 current, moneyLabel, timeUsedLabel,happyLabel, statusLabel);
 
         addItemCard(grid, 2, 0,
-                "/storeItem/scooter.png", new Lottery(),
+                "/storeItem/scooter.png", new Scooter(),
                 current, moneyLabel, timeUsedLabel,happyLabel, statusLabel);
 
         addItemCard(grid, 2, 1,
-                "/storeItem/car.png", new Lottery(),
+                "/storeItem/car.png", new Car(),
                 current, moneyLabel, timeUsedLabel,happyLabel, statusLabel);
 
         VBox centerBox = new VBox(10, grid, statusLabel);
