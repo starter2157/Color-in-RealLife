@@ -4,6 +4,7 @@ import entity.base.GameMode;
 import entity.base.Transportation;
 import entity.items.Item;
 import entity.base.PlaceName;
+import entity.items.Lottery;
 import entity.jobs.*;
 import logic.TurnSystem;
 
@@ -45,7 +46,7 @@ public class Player {
 
     public void rest(){
         useTime(60);
-        gainHappiness(20);
+        gainHappiness(10);
     }
 
     public void work(){
@@ -112,7 +113,7 @@ public class Player {
 
     // Time Management
 
-    private void useTime(int time){
+    public void useTime(int time){
         if (time < 0) return;
         this.timeUsed = Math.min(MAX_TIME_PER_TURN, timeUsed + time);
     }
@@ -131,6 +132,14 @@ public class Player {
         this.setTimeUsed(0);
         if(!isEat() && !isFirstTurn) useTime(120);
         else setEat(false);
+        Inventory playerInventory = getInventory();
+        int lotteryNumber = (int)(Math.random() * (100));
+        if(playerInventory.numberOfItem() != 0){
+            for(Lottery lottery : playerInventory.getItems()){
+                if(lotteryNumber == lottery.getNumber()) gainMoney(500);
+            }
+            playerInventory.getItems().clear();
+        }
     }
 
     public void endTurn(){
@@ -138,23 +147,11 @@ public class Player {
         this.setCurrentLocation(PlaceName.HOME);
     }
 
-    /* Win Condition
+    /* Win Condition (Look in TurnSystem)
     1. Mode Short Requirement (10 Rounds)
-        - money 1200
-        - education 15
-        - happiness 500
     2. Mode Medium Requirement (20 Rounds)
-        - money 2500
-        - education 25
-        - happiness 750
     3. Mode Long Requirement (30 Rounds)
-        - money 4500
-        - education 40
-        - happiness 1500
-    4. Mode Marathon Requirement (Till one Player meets requirement)
-        - money 10000
-        - education 82 (learn everything)
-        - happiness 4000 */
+    4. Mode Marathon Requirement (Till one Player meets requirement) */
 
     public boolean isWin(GameMode gameMode){
         if ( stats.getMoney() >= TurnSystem.getMaxMoney(gameMode) &&

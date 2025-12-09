@@ -26,10 +26,10 @@ public class TurnSystem {
     }
 
     public static int getMaxHappiness(GameMode gameMode){
-        if(gameMode.equals(GameMode.SHORT)) return 150;
-        else if(gameMode.equals(GameMode.MEDIUM)) return 300;
-        else if(gameMode.equals(GameMode.LONG)) return 500;
-        else return 1000;
+        if(gameMode.equals(GameMode.SHORT)) return 1000;
+        else if(gameMode.equals(GameMode.MEDIUM)) return 2000;
+        else if(gameMode.equals(GameMode.LONG)) return 3000;
+        else return 5000;
     }
 
 }

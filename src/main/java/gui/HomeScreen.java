@@ -103,7 +103,7 @@ public class HomeScreen {
                 p.rest();
 
                 timeUsedLabel.setText("Time: " + current.getRemainingTime() + " / " + current.getMAX_TIME_PER_TURN());
-
+                happyLabel.setText("Happiness: " + current.getStats().getHappiness() + " / " + TurnSystem.getMaxHappiness(gameMode));
                 statusLabel.setText(p.getName() + " Rested!");
             }
         });

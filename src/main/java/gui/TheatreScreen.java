@@ -103,19 +103,19 @@ public class TheatreScreen {
         // imagePath: path รูป, name: ชื่อสินค้า, price: ราคา, row/col: ตำแหน่งใน grid
         addItemCard(grid, 0, 0,
                 "/theatreItem/f1.png", new Formula1(),
-                current, moneyLabel, happyLabel, statusLabel);
+                current, moneyLabel, happyLabel,timeUsedLabel, statusLabel);
 
         addItemCard(grid, 1, 0,
                 "/theatreItem/football.png", new PremierLeague(),
-                current, moneyLabel, happyLabel, statusLabel);
+                current, moneyLabel, happyLabel, timeUsedLabel, statusLabel);
 
         addItemCard(grid, 0, 1,
                 "/theatreItem/valo.png", new Valorant(),
-                current, moneyLabel, happyLabel, statusLabel);
+                current, moneyLabel, happyLabel, timeUsedLabel, statusLabel);
 
         addItemCard(grid, 1, 1,
                 "/theatreItem/uma.png", new Uma(),
-                current, moneyLabel, happyLabel, statusLabel);
+                current, moneyLabel, happyLabel, timeUsedLabel, statusLabel);
 
         VBox centerBox = new VBox(10, grid, statusLabel);
         centerBox.setAlignment(Pos.TOP_CENTER);
@@ -149,6 +149,7 @@ public class TheatreScreen {
                              Player player,
                              Label moneyLabel,
                              Label happyLabel,
+                             Label timeUsedLabel,
                              Label statusLabel) {
 
         VBox card = new VBox(8);
@@ -199,6 +200,7 @@ public class TheatreScreen {
                 int newMoney = money - item.getPrice();
                 moneyLabel.setText("Money: " + newMoney + " / " + TurnSystem.getMaxMoney(gameMode));
                 happyLabel.setText("Happiness: " + player.getStats().getHappiness() + " / " + TurnSystem.getMaxHappiness(gameMode));
+                timeUsedLabel.setText(("Time: " + player.getRemainingTime() + " / " + player.getMAX_TIME_PER_TURN()));
                 statusLabel.setText("Buy " + item.getName() + " price $" + item.getPrice() + " สำเร็จ");
 
             } else {

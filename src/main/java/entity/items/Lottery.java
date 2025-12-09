@@ -9,12 +9,16 @@ public class Lottery extends Item implements Buyable {
 
     public Lottery(){
         super("Lottery", 50);
-        number = (int)(Math.random() * (100));
+        number = (int)(Math.random() * (50));
     }
 
     @Override
     public void buyItem(Player player){
         player.getInventory().addItem(new Lottery());
         player.reduceMoney(getPrice());
+    }
+
+    public int getNumber(){
+        return this.number;
     }
 }
