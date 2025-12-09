@@ -47,7 +47,7 @@ public class Main extends Application {
             players.add(new Player("Player " + i));
         }
         gameState = new GameState(players, gameMode);
-        GameScreen gameScreen = new GameScreen(this, gameState);
+        GameScreen gameScreen = new GameScreen(this, gameState, gameMode);
         Scene scene = gameScreen.getScene();
 
         primaryStage.setScene(scene);
@@ -69,7 +69,7 @@ public class Main extends Application {
     }
 
     public void showGameScreen(GameState state) {
-        GameScreen game = new GameScreen(this, state);
+        GameScreen game = new GameScreen(this, state, GameScreen.gameMode);
         primaryStage.setScene(game.getScene());
     }
 
