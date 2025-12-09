@@ -1,27 +1,30 @@
 package player;
 
-import entity.items.Item;
+import entity.items.Lottery;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Inventory {
 
-    private List<Item> items;
+    private List<Lottery> items;
+    private int numberOfItem;
 
     public Inventory(){
         this.items = new ArrayList<>();
+        numberOfItem = 0;
     }
 
-    public void addItem(Item item){
-        items.add(item);
+    public void addItem(Lottery lottery){
+        items.add(lottery);
+        numberOfItem++;
     }
 
-    public void deleteItem(Item item){
-        items.remove(item);
+    public int numberOfItem(){
+        return numberOfItem;
     }
 
-    public List<Item> getItems() {
+    public List<Lottery> getItems() {
         return items;
     }
 

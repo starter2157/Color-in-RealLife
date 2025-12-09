@@ -1,14 +1,13 @@
 package gui;
 
-// package game; // <- add or remove depending on your project
 import application.Main;
-import entity.places.PlaceName;
+import entity.base.GameMode;
+import entity.base.PlaceName;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,11 +16,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import logic.Player;
+import logic.GameState;
+import logic.TurnSystem;
+import player.Player;
 
+import javax.print.attribute.standard.Destination;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,15 +30,16 @@ import java.util.Map;
 
 public class GameScreen {
 
-    private final Main app;
+    private static Main app = null;
     private static GameState gameState = null;
+    public static GameMode gameMode;
     private Scene scene;
 
     private ImageView mapView;
-    private Pane mapLayer; // map + player tokens
+    private static Pane root;  // ใช้ disable/enable ตอน player เดิน
 
     // map locations and tokens
-    private Map<PlaceName, Point2D> locationPoints = new HashMap<>();
+    private static Map<PlaceName, Point2D> locationPoints = new HashMap<>();
     private static List<ImageView> playerTokens = new ArrayList<>();
 
     // 4 corner HUD panels
@@ -51,10 +53,11 @@ public class GameScreen {
                     + "-fx-padding: 10;"
                     + "-fx-background-radius: 10;";
 
-    public GameScreen(Main app, GameState gameState) {
+    public GameScreen(Main app, GameState gameState, GameMode gameMode) {
         this.app = app;
         GameScreen.gameState = gameState;
         this.scene = createScene();
+        this.gameMode = gameMode;
         refreshUI();
     }
 
@@ -64,32 +67,38 @@ public class GameScreen {
 
     private Scene createScene() {
 
-        // ========== MAP LAYER (background + tokens) ==========
+        // ===== ROOT PANE (fixed 1080x720) =====
+        root = new Pane();
+        root.setPrefSize(1080, 720);
+
+        // ===== MAP IMAGE =====
         Image mapImage = new Image(
                 getClass().getResource("/city_map.png").toExternalForm()
         );
         mapView = new ImageView(mapImage);
-        mapView.setPreserveRatio(true);
-        mapView.setSmooth(true);
         mapView.setFitWidth(1080);
         mapView.setFitHeight(720);
+        mapView.setPreserveRatio(false); // เน้นให้เต็มฉาก
 
-        mapLayer = new Pane();
-        mapLayer.getChildren().add(mapView);
+        // add map first (ล่างสุด)
+        root.getChildren().add(mapView);
 
-        // approximate coordinates on a 1280x720 map (tweak as you like)
-        locationPoints.put(PlaceName.HOME,         new Point2D(240, 300));
-        locationPoints.put(PlaceName.STORE,          new Point2D(260, 560));
-        locationPoints.put(PlaceName.THEATRE, new Point2D(820, 520));
-        locationPoints.put(PlaceName.SCHOOL,    new Point2D(640, 140));
-        locationPoints.put(PlaceName.WORKPLACE,     new Point2D(980, 280));
+        // ===== LOCATION COORDINATES =====
+        locationPoints.put(PlaceName.HOME,       new Point2D(240, 300));
+        locationPoints.put(PlaceName.STORE,      new Point2D(260, 560));
+        locationPoints.put(PlaceName.THEATRE,    new Point2D(820, 520));
+        locationPoints.put(PlaceName.SCHOOL,     new Point2D(640, 140));
+        locationPoints.put(PlaceName.WORKPLACE,  new Point2D(980, 280));
 
-        // one token per player (small portrait)
+        // เคลียร์ token เก่าออกก่อน (กันซ้ำตอนกลับจากหน้าจออื่น)
+        playerTokens.clear();
+
+        // ===== PLAYER TOKENS =====
         List<Player> players = GameState.getPlayers();
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
 
-            String portraitPath = "/icons/p" + (i + 1) + ".png";
+            String portraitPath = "/icons/Player " + (i + 1) + ".png";
             Image img = new Image(
                     getClass().getResource(portraitPath).toExternalForm()
             );
@@ -99,91 +108,125 @@ public class GameScreen {
             token.setPreserveRatio(true);
 
             Point2D pt = locationPoints.get(p.getCurrentLocation());
+            if (pt == null) pt = locationPoints.get(PlaceName.HOME);
             token.setLayoutX(pt.getX());
             token.setLayoutY(pt.getY());
 
             playerTokens.add(token);
-            mapLayer.getChildren().add(token);
+            root.getChildren().add(token);  // อยู่เหนือ map
         }
 
-        // root StackPane to layer HUD on top of map
-        StackPane root = new StackPane();
-        root.getChildren().add(mapLayer);
+        // ===== LOCATION BUTTONS =====
+        String locationBtnStyle =
+                "-fx-background-color: rgba(0,0,0,0.4);"
+                        + "-fx-text-fill: white;"
+                        + "-fx-background-radius: 8;"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-padding: 4 8;";
 
-        // ========== HUD: 4 corner panels ==========
+        Button btnHome  = new Button("Home");
+        Button btnStore = new Button("Store");
+        Button btnThea  = new Button("Theatre");
+        Button btnSch   = new Button("School");
+        Button btnWork  = new Button("Workplace");
 
+        btnHome.setStyle(locationBtnStyle);
+        btnStore.setStyle(locationBtnStyle);
+        btnThea.setStyle(locationBtnStyle);
+        btnSch.setStyle(locationBtnStyle);
+        btnWork.setStyle(locationBtnStyle);
+
+        placeButtonAt(btnHome,  PlaceName.HOME,      -20, -40);
+        placeButtonAt(btnStore, PlaceName.STORE,     -20, -40);
+        placeButtonAt(btnThea,  PlaceName.THEATRE,   -20, -40);
+        placeButtonAt(btnSch,   PlaceName.SCHOOL,    -20, -40);
+        placeButtonAt(btnWork,  PlaceName.WORKPLACE, -20, -40);
+
+        root.getChildren().addAll(btnHome, btnStore, btnThea, btnSch, btnWork);
+
+        // ===== ปุ่มกดแต่ละที่ =====
+
+        // ไป Home → เดินก่อน พอถึงแล้วค่อยเข้า HomeScreen
+        btnHome.setOnAction(e -> {
+            System.out.println("Button Home clicked");
+            SoundManager.playClick();
+            moveCurrentPlayerTo(PlaceName.HOME, () -> app.showHomeScreen(gameState));
+        });
+
+        // ไป Store → เดินก่อน พอถึงแล้วค่อยเข้า StoreScreen
+        btnStore.setOnAction(e -> {
+            System.out.println("Button Store clicked");
+            SoundManager.playClick();
+            moveCurrentPlayerTo(PlaceName.STORE, () -> app.showStoreScreen(gameState));
+        });
+
+        btnThea.setOnAction(e -> {
+            System.out.println("Button Theatre clicked");
+            SoundManager.playClick();
+            moveCurrentPlayerTo(PlaceName.THEATRE, () -> app.showTheatreScreen(gameState));
+        });
+
+        btnSch.setOnAction(e -> {
+            System.out.println("Button School clicked");
+            SoundManager.playClick();
+            moveCurrentPlayerTo(PlaceName.SCHOOL, () -> app.showSchoolScreen(gameState));
+        });
+
+        btnWork.setOnAction(e -> {
+            System.out.println("Button Workplace clicked");
+            SoundManager.playClick();
+            moveCurrentPlayerTo(PlaceName.WORKPLACE, () -> app.showWorkplaceScreen(gameState));
+        });
+
+        // ===== HUD PANELS =====
         p1Panel = makePlayerPanel();
-        StackPane.setAlignment(p1Panel, Pos.TOP_LEFT);
-        StackPane.setMargin(p1Panel, new Insets(15, 0, 0, 15));
-
         p2Panel = makePlayerPanel();
-        StackPane.setAlignment(p2Panel, Pos.TOP_RIGHT);
-        StackPane.setMargin(p2Panel, new Insets(15, 15, 0, 0));
-
         p3Panel = makePlayerPanel();
-        StackPane.setAlignment(p3Panel, Pos.BOTTOM_LEFT);
-        StackPane.setMargin(p3Panel, new Insets(0, 0, 15, 15));
-
         p4Panel = makePlayerPanel();
-        StackPane.setAlignment(p4Panel, Pos.BOTTOM_RIGHT);
-        StackPane.setMargin(p4Panel, new Insets(0, 15, 15, 0));
+
+        p1Panel.setLayoutX(20);
+        p1Panel.setLayoutY(20);
+
+        p2Panel.setLayoutX(1080 - 220);
+        p2Panel.setLayoutY(20);
+
+        p3Panel.setLayoutX(20);
+        p3Panel.setLayoutY(720 - 220);
+
+        p4Panel.setLayoutX(1080 - 220);
+        p4Panel.setLayoutY(720 - 220);
 
         root.getChildren().addAll(p1Panel, p2Panel, p3Panel, p4Panel);
 
-        // ========== BOTTOM BUTTONS (movement + turn) ==========
-
-        Button btnHome = new Button("Home");
-        Button btnStore = new Button("Store");
-        Button btnTheatre = new Button("Theatre");
-        Button btnSchool = new Button("School");
-        Button btnWorkplace = new Button("Workplace");
+        // ===== ปุ่ม End Turn / Back =====
         Button btnEndTurn = new Button("End Turn");
         Button btnBack = new Button("Back");
 
-        btnHome.setOnAction(e -> moveCurrentPlayerTo(PlaceName.HOME));
-        btnStore.setOnAction(e -> moveCurrentPlayerTo(PlaceName.STORE));
-        btnTheatre.setOnAction(e -> moveCurrentPlayerTo(PlaceName.THEATRE));
-        btnSchool.setOnAction(e -> moveCurrentPlayerTo(PlaceName.SCHOOL));
-        btnWorkplace.setOnAction(e -> moveCurrentPlayerTo(PlaceName.WORKPLACE));
-
         btnEndTurn.setOnAction(e -> {
-            gameState.nextPlayerIndex();
+            gameState.nextPlayerTurn();
+            resetCurrentPlayerToHome(gameState.getCurrentPlayer().getCurrentLocation());
             refreshUI();
         });
 
         btnBack.setOnAction(e -> app.showStartScreen());
 
-        HBox moveButtons = new HBox(12, btnHome, btnStore, btnTheatre, btnSchool, btnWorkplace);
-        moveButtons.setAlignment(Pos.CENTER);
-        moveButtons.setPadding(new Insets(10));
-
         HBox turnButtons = new HBox(12, btnEndTurn, btnBack);
-        turnButtons.setAlignment(Pos.CENTER);
-        turnButtons.setPadding(new Insets(10));
+        turnButtons.setSpacing(12);
+        turnButtons.setLayoutX(1080 / 2.0 - 80);
+        turnButtons.setLayoutY(720 - 40);
+        root.getChildren().add(turnButtons);
 
-        VBox buttonLayer = new VBox(10, moveButtons, turnButtons);
-        buttonLayer.setAlignment(Pos.BOTTOM_CENTER);
-        buttonLayer.setMouseTransparent(false);
-
-        StackPane.setAlignment(buttonLayer, Pos.BOTTOM_CENTER);
-        StackPane.setMargin(buttonLayer, new Insets(30));
-
-        root.getChildren().add(buttonLayer);
-
-        // ========== Scene + resizing behaviour ==========
+        // ===== Scene =====
         scene = new Scene(root, 1080, 720);
-
-        scene.widthProperty().addListener((obs, oldV, newV) ->
-                mapView.setFitWidth(newV.doubleValue())
-        );
-        scene.heightProperty().addListener((obs, oldV, newV) ->
-                mapView.setFitHeight(newV.doubleValue())
-        );
-
         return scene;
     }
 
-    // small helper to build a HUD panel shell
+    private void placeButtonAt(Button btn, PlaceName place, double dx, double dy) {
+        Point2D base = locationPoints.get(place);
+        btn.setLayoutX(base.getX() + dx);
+        btn.setLayoutY(base.getY() + dy);
+    }
+
     private VBox makePlayerPanel() {
         VBox box = new VBox(5);
         box.setStyle(PANEL_BASE_STYLE);
@@ -192,7 +235,6 @@ public class GameScreen {
         return box;
     }
 
-    // row like: [icon][text]
     private static HBox statRow(String iconPath, String text) {
         Image iconImg = new Image(
                 GameScreen.class.getResource(iconPath).toExternalForm()
@@ -218,7 +260,7 @@ public class GameScreen {
                 "-fx-border-color: " + borderColor + ";" +
                 "-fx-border-width: 2;");
 
-        String portraitPath = "/icons/p" + (playerIndex + 1) + ".png";
+        String portraitPath = "/icons/Player " + (playerIndex + 1) + ".png";
         Image portraitImg = new Image(
                 GameScreen.class.getResource(portraitPath).toExternalForm()
         );
@@ -230,53 +272,142 @@ public class GameScreen {
         Label name = new Label(p.getName());
         name.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16;");
 
-        HBox moneyRow = statRow("/icons/money.png", " " + p.getStats().getMoney());
-        HBox happyRow = statRow("/icons/happy.png", " " + p.getStats().getHappiness());
-
+        HBox moneyRow = statRow("/icons/money.png",
+                " " + p.getStats().getMoney() + " / " + TurnSystem.getMaxMoney(gameMode));
+        HBox happyRow = statRow("/icons/happy.png",
+                " " + p.getStats().getHappiness() + " / " + TurnSystem.getMaxHappiness(gameMode));
+        Label educationLabel = new Label(
+                "Education Level: " + p.getStats().getEducation() + " / " + TurnSystem.getMaxEducation(gameMode));
+        educationLabel.setStyle("-fx-text-fill: white;");
         Label timeLabel = new Label(
-                "Time: " + p.getRemainingTime() + " / " + p.getMaxTimePerTurn()
-        );
+                "Time: " + p.getRemainingTime() + " / " + p.getMaxTimePerTurn());
         timeLabel.setStyle("-fx-text-fill: white;");
 
-        box.getChildren().addAll(portrait, name, moneyRow, happyRow, timeLabel);
+        box.getChildren().addAll(portrait, name, moneyRow, happyRow, educationLabel, timeLabel);
         return box;
     }
 
     public static void refreshUI() {
         List<Player> players = GameState.getPlayers();
 
-        p1Panel.getChildren().clear();
-        p2Panel.getChildren().clear();
-        p3Panel.getChildren().clear();
-        p4Panel.getChildren().clear();
+        // 1) เคลียร์ + ซ่อนทุก panel ก่อน
+        if (p1Panel != null) {
+            p1Panel.getChildren().clear();
+            p1Panel.setVisible(false);
+            p1Panel.setManaged(false);
+        }
+        if (p2Panel != null) {
+            p2Panel.getChildren().clear();
+            p2Panel.setVisible(false);
+            p2Panel.setManaged(false);
+        }
+        if (p3Panel != null) {
+            p3Panel.getChildren().clear();
+            p3Panel.setVisible(false);
+            p3Panel.setManaged(false);
+        }
+        if (p4Panel != null) {
+            p4Panel.getChildren().clear();
+            p4Panel.setVisible(false);
+            p4Panel.setManaged(false);
+        }
 
-        if (players.size() > 0) p1Panel.getChildren().add(
-                buildPanelForPlayer(players.get(0), 0));
-        if (players.size() > 1) p2Panel.getChildren().add(
-                buildPanelForPlayer(players.get(1), 1));
-        if (players.size() > 2) p3Panel.getChildren().add(
-                buildPanelForPlayer(players.get(2), 2));
-        if (players.size() > 3) p4Panel.getChildren().add(
-                buildPanelForPlayer(players.get(3), 3));
+        // 2) มี player กี่คน ก็เปิดเท่านั้นแหละ
+
+        if (players.size() > 0 && p1Panel != null) {
+            p1Panel.getChildren().add(buildPanelForPlayer(players.get(0), 0));
+            p1Panel.setVisible(true);
+            p1Panel.setManaged(true);
+        }
+        if (players.size() > 1 && p2Panel != null) {
+            p2Panel.getChildren().add(buildPanelForPlayer(players.get(1), 1));
+            p2Panel.setVisible(true);
+            p2Panel.setManaged(true);
+        }
+        if (players.size() > 2 && p3Panel != null) {
+            p3Panel.getChildren().add(buildPanelForPlayer(players.get(2), 2));
+            p3Panel.setVisible(true);
+            p3Panel.setManaged(true);
+        }
+        if (players.size() > 3 && p4Panel != null) {
+            p4Panel.getChildren().add(buildPanelForPlayer(players.get(3), 3));
+            p4Panel.setVisible(true);
+            p4Panel.setManaged(true);
+        }
 
         updateTokenVisibility();
     }
 
-    // animate token + update state
-    private void moveCurrentPlayerTo(PlaceName destination) {
+
+    // ตอนเริ่มเทิร์นของ current player ให้ย้ายกลับ HOME แบบ instant
+    public static void resetCurrentPlayerToHome(PlaceName currentLocation) {
+        Player player = gameState.getCurrentPlayer();
+        Point2D currentPt = locationPoints.get(currentLocation);
+        Point2D homePt = locationPoints.get(PlaceName.HOME);
+        ImageView token = playerTokens.get(gameState.getCurrentPlayerIndex());
+        if(currentLocation != PlaceName.HOME){
+            Timeline goHome = new Timeline(
+                    new KeyFrame(Duration.ZERO,
+                            new KeyValue(token.layoutXProperty(), currentPt.getX()),
+                            new KeyValue(token.layoutYProperty(), currentPt.getY())
+                    ),
+                    new KeyFrame(Duration.millis(450),
+                            new KeyValue(token.layoutXProperty(), homePt.getX()),
+                            new KeyValue(token.layoutYProperty(), homePt.getY())
+                    )
+            );
+
+            goHome.setOnFinished(ev -> {
+
+                if(gameState.isLastPlayerTurn() && player.isEndTurn()) {
+                    // Redirect to end screen
+                    delayScreenChange(() -> app.showResultScreen(gameState));
+                }
+
+                // Set logical position to HOME
+                player.setCurrentLocation(PlaceName.HOME);
+
+                // End turn
+                player.endTurn();
+                gameState.nextPlayerTurn();
+
+                refreshUI();
+                root.setDisable(false);
+
+
+            });
+
+            goHome.play();
+        } else if (homePt != null) {
+            token.setLayoutX(homePt.getX());
+            token.setLayoutY(homePt.getY());
+        }
+
+    }
+
+    // เวอร์ชันใหม่: ส่ง callback มาให้ทำหลังเดินถึงที่หมาย (และยังไม่หมดเทิร์น)
+    private static void moveCurrentPlayerTo(PlaceName destination, Runnable onArrive) {
         int idx = gameState.getCurrentPlayerIndex();
         Player player = gameState.getCurrentPlayer();
         PlaceName currentLocation = player.getCurrentLocation();
 
-        if (currentLocation == destination) return;
+        if (currentLocation == destination) {
+            // ถ้าอยู่ที่เดิมอยู่แล้ว ไม่ต้องเดิน แต่อาจมีการเปิดหน้าจอ
+            if (onArrive != null) onArrive.run();
+            return;
+        }
 
         Point2D fromPt = locationPoints.get(currentLocation);
         Point2D toPt = locationPoints.get(destination);
         ImageView token = playerTokens.get(idx);
 
+        // เดินทาง (กินเวลา)
         player.travel(destination);
 
-        Timeline timeline = new Timeline(
+        // ระหว่างเดิน: disable ทั้ง root ห้ามกดปุ่มอื่น
+        root.setDisable(true);
+
+        Timeline goToDestination = new Timeline(
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(token.layoutXProperty(), fromPt.getX()),
                         new KeyValue(token.layoutYProperty(), fromPt.getY())
@@ -286,12 +417,30 @@ public class GameScreen {
                         new KeyValue(token.layoutYProperty(), toPt.getY())
                 )
         );
-        timeline.play();
-        if(player.getTimeUsed() > player.getMAX_TIME_PER_TURN()){
-            gameState.nextTurn();
-            refreshUI();
-        }
+        goToDestination.play();
 
+        goToDestination.setOnFinished(e -> {
+
+            refreshUI();
+
+            // ถ้าใช้เวลาเกินเทิร์น → จบเทิร์น + เปลี่ยนคนเล่น + กลับ HOME
+            if (player.isEndTurn() && player.getCurrentLocation() != PlaceName.HOME) {
+                resetCurrentPlayerToHome(destination);
+            } else if (player.isEndTurn() && player.getCurrentLocation() == PlaceName.HOME){
+                if(gameState.isLastPlayerTurn() && player.isEndTurn()) {
+                    delayScreenChange(() -> app.showResultScreen(gameState));
+                }
+                player.endTurn();
+                gameState.nextPlayerTurn();
+                refreshUI();
+                root.setDisable(false);
+            } else {
+                root.setDisable(false);
+                if (onArrive != null) {
+                    onArrive.run();
+                }
+            }
+        });
     }
 
     private static void updateTokenVisibility() {
@@ -301,4 +450,45 @@ public class GameScreen {
         }
     }
 
+    public static void delayScreenChange(Runnable action) {
+        PauseTransition delay = new PauseTransition(Duration.seconds(2));
+        delay.setOnFinished(e -> action.run());
+        delay.play();
+    }
+
+    public static void showTurnBanner(String turnNumber) {
+
+        Label banner = new Label(turnNumber);
+
+        banner.setStyle(
+                "-fx-font-size: 64px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: black;" +
+                        "-fx-background-color: rgba(135,206,250,0.9);" +  // sky-blue box
+                        "-fx-padding: 20 60;" +
+                        "-fx-background-radius: 20;" +
+                        "-fx-border-color: navy;" +
+                        "-fx-border-width: 4;" +
+                        "-fx-border-radius: 20;"
+        );
+
+        // Center on screen
+        banner.setLayoutX(1080 / 2.0 - 200);
+        banner.setLayoutY(720 / 2.0 - 100);
+
+        root.getChildren().add(banner);
+
+        // Show for 3 seconds then fade out and remove
+        PauseTransition delay = new PauseTransition(Duration.seconds(3));
+
+        delay.setOnFinished(e -> {
+            root.getChildren().remove(banner);
+        });
+
+        delay.play();
+    }
+
+    public static Main getApp() {
+        return app;
+    }
 }

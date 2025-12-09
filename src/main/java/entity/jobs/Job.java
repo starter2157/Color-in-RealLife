@@ -1,20 +1,20 @@
 package entity.jobs;
 
 import entity.base.Workable;
-import logic.Player;
+import player.Player;
 
 public class Job implements Workable {
-    protected JobType jobType;
+    protected int salary;
 
-    public Job(JobType jobType){
-        this.jobType = jobType;
+    public Job (int salary) {
+        this.salary = salary;
     }
 
-    public void work(Player player){
-
+    public void work (Player player) {
+        player.gainMoney(getSalary());
     }
 
-    public JobType getJobType() {
-        return jobType;
+    public int getSalary () {
+        return salary;
     }
 }

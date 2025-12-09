@@ -1,23 +1,35 @@
 package player;
 
+import entity.base.GameMode;
+import logic.GameState;
+import logic.TurnSystem;
+
 public class Stats {
     private int education;
-    private int stress;
     private int happiness;
     private int money;
-    private int workExperience;
+    private int pointSummation;
 
     // Stats Initialize
 
     public Stats(){
         this.education = 0;
-        this.stress = 0;
         this.happiness = 0;
-        this.workExperience = 0;
         this.money = 200;
+        this.pointSummation =200;
     }
 
     // Getter and Setter
+
+    public void setPointSummation(GameMode gameMode) {
+        pointSummation += Math.min(getMoney(), TurnSystem.getMaxMoney(gameMode));
+        pointSummation += Math.min(getHappiness(), TurnSystem.getMaxHappiness(gameMode));
+        pointSummation += Math.min(getEducation(), TurnSystem.getMaxEducation(gameMode)) * 8;
+    }
+
+    public int getPointSummation(){
+        return pointSummation;
+    }
 
     public int getEducation() {
         return education;
@@ -25,15 +37,6 @@ public class Stats {
 
     public void setEducation(int education) {
         this.education = Math.max(0, education);
-    }
-
-    public int getStress() {
-        return stress;
-    }
-
-    public void setStress(int stress) {
-        this.stress = Math.max(0, stress);
-        this.stress = Math.min(this.stress, 10);
     }
 
     public int getHappiness() {
@@ -52,11 +55,4 @@ public class Stats {
         this.money = Math.max(0, money);
     }
 
-    public int getWorkExperience() {
-        return workExperience;
-    }
-
-    public void setWorkExperience(int workExperience) {
-        this.workExperience = Math.max(0, workExperience);
-    }
 }
