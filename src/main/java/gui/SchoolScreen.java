@@ -36,8 +36,8 @@ public class SchoolScreen {
     private static final double WIDTH = 1080;
     private static final double HEIGHT = 720;
 
-    private Label[] progressLabels = new Label[LEVEL_COUNT];
-    private Button[] studyButtons = new Button[LEVEL_COUNT];
+    private final Label[] progressLabels = new Label[LEVEL_COUNT];
+    private final Button[] studyButtons = new Button[LEVEL_COUNT];
 
     public SchoolScreen(Main app, GameState gameState) {
         this.app = app;
@@ -263,7 +263,6 @@ public class SchoolScreen {
     //  REFRESH LEVEL UI
     // -----------------------------------------------------
     private void refreshLevelUI(Player player) {
-        String key = player.getName();
         int[] arr = player.getLearningProgress();
 
         for (int i = 0; i < LEVEL_COUNT; i++) {

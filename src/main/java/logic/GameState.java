@@ -56,22 +56,6 @@ public class GameState {
         }
     }
 
-    // Point Calculation Method
-
-    public Player findWinner(){
-        int maxPoint = -1;
-        int playerPoint = 0;
-        Player winner = null;
-        for (Player player : players){
-            Stats playerStats = player.getStats();
-            playerPoint += Math.min(playerStats.getEducation(), TurnSystem.getMaxEducation(gameMode));
-            playerPoint += Math.min(playerStats.getHappiness(), TurnSystem.getMaxHappiness(gameMode));
-            playerPoint += Math.min(playerStats.getMoney(), TurnSystem.getMaxMoney(gameMode));
-            if(playerPoint > maxPoint) winner = player;
-        }
-        return winner;
-    }
-
     // Getter ans Setter
 
     public static List<Player> getPlayers() {

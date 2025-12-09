@@ -1,0 +1,132 @@
+@startuml
+class gui.SchoolScreen {
+- Main app
+- GameState gameState
+- Scene scene
+- int LEVEL_COUNT
+- int[] REQUIRED_STUDY_EACH_LEVEL
+- int[] COST_PER_LEVEL
+- {static} double WIDTH
+- {static} double HEIGHT
+- Label[] progressLabels
+- Button[] studyButtons
++ Scene getScene()
+- Scene createScene()
+- VBox createStatusBox(Player)
+- VBox createLevelCard(int,Player,Node,Node,Node)
+- void handleStudy(int,Player)
+- boolean payForLevel(Player,int)
+- void showPopup(String,String)
+- boolean isLevelUnlocked(Player,int)
+- void refreshLevelUI(Player)
+}
+
+
+class gui.GameScreen {
+- {static} Main app
+- {static} GameState gameState
++ {static} GameMode gameMode
+- Scene scene
+- ImageView mapView
+- {static} Pane root
+- {static} Map<PlaceName,Point2D> locationPoints
+- {static} List<ImageView> playerTokens
+- {static} VBox p1Panel
+- {static} VBox p2Panel
+- {static} VBox p3Panel
+- {static} VBox p4Panel
+- {static} String PANEL_BASE_STYLE
++ Scene getScene()
+- Scene createScene()
+- void placeButtonAt(Button,PlaceName,double,double)
+- VBox makePlayerPanel()
+- {static} HBox statRow(String,String)
+- {static} VBox buildPanelForPlayer(Player,int)
++ {static} void refreshUI()
++ {static} void resetCurrentPlayerToHome(PlaceName)
+- {static} void moveCurrentPlayerTo(PlaceName,Runnable)
+- {static} void updateTokenVisibility()
++ {static} void delayScreenChange(Runnable)
++ {static} void showTurnBanner(String)
++ {static} Main getApp()
+}
+
+
+class gui.ResultScreen {
+- Main app
+- GameState gameState
+- Scene scene
+- {static} double WIDTH
+- {static} double HEIGHT
++ Scene getScene()
+- Scene createScene()
+- HBox buildPlayerSummaryBox(Player,int)
+}
+
+
+class gui.StartScreen {
+- Main app
+- Scene scene
+- {static} double WIDTH
+- {static} double HEIGHT
++ Scene getScene()
+- Scene createScene()
+}
+
+
+class gui.HomeScreen {
+- Main app
+- GameState gameState
+- Scene scene
+- {static} double WIDTH
+- {static} double HEIGHT
++ Scene getScene()
+- Scene createScene()
+}
+
+
+class gui.TheatreScreen {
+- Main app
+- GameState gameState
+- Scene scene
+- {static} double WIDTH
+- {static} double HEIGHT
++ Scene getScene()
+- Scene createScene()
+- void addItemCard(GridPane,int,int,String,Item,Player,Label,Label,Label,Label)
+}
+
+
+class gui.WorkplaceScreen {
+- Main app
+- GameState gameState
+- Scene scene
+- {static} double WIDTH
+- {static} double HEIGHT
++ Scene getScene()
+- Scene createScene()
+}
+
+
+class gui.StoreScreen {
+- Main app
+- GameState gameState
+- Scene scene
+- {static} double WIDTH
+- {static} double HEIGHT
++ Scene getScene()
+- Scene createScene()
+- void addItemCard(GridPane,int,int,String,Item,Player,Label,Label,Label,Label)
+}
+
+
+class gui.SoundManager {
+- {static} AudioClip clickClip
+- {static} MediaPlayer cityBgm
++ {static} void playClick()
++ {static} void playCityBgm()
++ {static} void stopCityBgm()
+}
+
+
+@enduml

@@ -1,0 +1,401 @@
+@startuml
+class entity.jobs.Junior {
+}
+class gui.ResultScreen {
+- Main app
+- GameState gameState
+- Scene scene
+- {static} double WIDTH
+- {static} double HEIGHT
++ Scene getScene()
+- Scene createScene()
+- HBox buildPlayerSummaryBox(Player,int)
+}
+
+
+class entity.items.Uma {
++ void buyItem(Player)
+}
+
+interface entity.base.Workable {
+~ void work(Player)
+}
+
+class entity.jobs.Director {
+}
+class entity.jobs.Newbie {
+}
+class entity.items.Valorant {
++ void buyItem(Player)
+}
+
+interface entity.base.Buyable {
+~ void buyItem(Player)
+}
+
+class player.Stats {
+- int education
+- int happiness
+- int money
+- int pointSummation
++ void setPointSummation(GameMode)
++ int getPointSummation()
++ int getEducation()
++ void setEducation(int)
++ int getHappiness()
++ void setHappiness(int)
++ int getMoney()
++ void setMoney(int)
+}
+
+
+class gui.StoreScreen {
+- Main app
+- GameState gameState
+- Scene scene
+- {static} double WIDTH
+- {static} double HEIGHT
++ Scene getScene()
+- Scene createScene()
+- void addItemCard(GridPane,int,int,String,Item,Player,Label,Label,Label,Label)
+}
+
+
+enum entity.base.JobType {
++  NEWBIE
++  JUNIOR
++  SENIOR
++  MANAGER
++  DIRECTOR
+}
+
+interface entity.base.Eatable {
+~ void eat(Player)
+}
+
+enum entity.base.GameMode {
++  SHORT
++  MEDIUM
++  LONG
++  MARATHON
+}
+
+class gui.SchoolScreen {
+- Main app
+- GameState gameState
+- Scene scene
+- int LEVEL_COUNT
+- int[] REQUIRED_STUDY_EACH_LEVEL
+- int[] COST_PER_LEVEL
+- {static} double WIDTH
+- {static} double HEIGHT
+- Label[] progressLabels
+- Button[] studyButtons
++ Scene getScene()
+- Scene createScene()
+- VBox createStatusBox(Player)
+- VBox createLevelCard(int,Player,Node,Node,Node)
+- void handleStudy(int,Player)
+- boolean payForLevel(Player,int)
+- void showPopup(String,String)
+- boolean isLevelUnlocked(Player,int)
+- void refreshLevelUI(Player)
+}
+
+
+class logic.TurnSystem {
++ {static} int getMaxTurn(GameMode)
++ {static} int getMaxMoney(GameMode)
++ {static} int getMaxEducation(GameMode)
++ {static} int getMaxHappiness(GameMode)
+}
+
+class logic.GameState {
+- {static} GameState instance
+- List<Player> players
+- int currentPlayerIndex
+- GameMode gameMode
+- int currentTurn
+- int maxTurn
+- boolean isLastTurn
+- boolean isPlayerWin
+- boolean isFirstTurn
+- boolean isLastPlayerTurn
++ void nextPlayerTurn()
++ void nextPlayerIndex()
++ Player findWinner()
++ {static} List<Player> getPlayers()
++ Player getCurrentPlayer()
++ int getCurrentPlayerIndex()
++ boolean isLastPlayerTurn()
++ GameMode getGameMode()
+}
+
+
+enum entity.base.Transportation {
++  WALK
++  SCOOTER
++  CAR
+}
+
+abstract class entity.items.Item {
+- String name
+- int price
++ {abstract}void buyItem(Player)
++ String getName()
++ int getPrice()
+}
+
+
+class gui.StartScreen {
+- Main app
+- Scene scene
+- {static} double WIDTH
+- {static} double HEIGHT
++ Scene getScene()
+- Scene createScene()
+}
+
+
+class gui.HomeScreen {
+- Main app
+- GameState gameState
+- Scene scene
+- {static} double WIDTH
+- {static} double HEIGHT
++ Scene getScene()
+- Scene createScene()
+}
+
+
+class gui.TheatreScreen {
+- Main app
+- GameState gameState
+- Scene scene
+- {static} double WIDTH
+- {static} double HEIGHT
++ Scene getScene()
+- Scene createScene()
+- void addItemCard(GridPane,int,int,String,Item,Player,Label,Label,Label,Label)
+}
+
+
+class gui.WorkplaceScreen {
+- Main app
+- GameState gameState
+- Scene scene
+- {static} double WIDTH
+- {static} double HEIGHT
++ Scene getScene()
+- Scene createScene()
+}
+
+
+class entity.jobs.Job {
+# int salary
++ void work(Player)
++ int getSalary()
+}
+
+
+class entity.jobs.Manager {
+}
+class gui.SoundManager {
+- {static} AudioClip clickClip
+- {static} MediaPlayer cityBgm
++ {static} void playClick()
++ {static} void playCityBgm()
++ {static} void stopCityBgm()
+}
+
+
+class entity.items.Fries {
++ void buyItem(Player)
++ void eat(Player)
+}
+
+class player.Inventory {
+- List<Lottery> items
+- int numberOfItem
++ void addItem(Lottery)
++ int numberOfItem()
++ List<Lottery> getItems()
+}
+
+
+class entity.items.Burger {
++ void buyItem(Player)
++ void eat(Player)
+}
+
+class entity.items.BigMeal {
++ void buyItem(Player)
++ void eat(Player)
+}
+
+class entity.items.Formula1 {
++ void buyItem(Player)
+}
+
+class application.Main {
+- Stage primaryStage
+- GameState gameState
+- MediaPlayer cityBgm
++ void start(Stage)
++ void startNewGame(int,GameMode)
++ void showStartScreen()
++ void showGameScreen(GameState)
++ void showHomeScreen(GameState)
++ void showStoreScreen(GameState)
++ void showTheatreScreen(GameState)
++ void showSchoolScreen(GameState)
++ void showWorkplaceScreen(GameState)
++ void showResultScreen(GameState)
++ {static} void main(String[])
+}
+
+
+class entity.items.PremierLeague {
++ void buyItem(Player)
+}
+
+class entity.items.Lottery {
+- int number
++ void buyItem(Player)
++ int getNumber()
+}
+
+
+class gui.GameScreen {
+- {static} Main app
+- {static} GameState gameState
++ {static} GameMode gameMode
+- Scene scene
+- ImageView mapView
+- {static} Pane root
+- {static} Map<PlaceName,Point2D> locationPoints
+- {static} List<ImageView> playerTokens
+- {static} VBox p1Panel
+- {static} VBox p2Panel
+- {static} VBox p3Panel
+- {static} VBox p4Panel
+- {static} String PANEL_BASE_STYLE
++ Scene getScene()
+- Scene createScene()
+- void placeButtonAt(Button,PlaceName,double,double)
+- VBox makePlayerPanel()
+- {static} HBox statRow(String,String)
+- {static} VBox buildPanelForPlayer(Player,int)
++ {static} void refreshUI()
++ {static} void resetCurrentPlayerToHome(PlaceName)
+- {static} void moveCurrentPlayerTo(PlaceName,Runnable)
+- {static} void updateTokenVisibility()
++ {static} void delayScreenChange(Runnable)
++ {static} void showTurnBanner(String)
++ {static} Main getApp()
+}
+
+
+class player.Player {
+- String name
+- Stats stats
+- Job job
+- Inventory inventory
+- int timeUsed
+- int timeReduce
+- PlaceName currentLocation
+- Transportation transportation
+- int MAX_TIME_PER_TURN
+- boolean isEat
+- boolean[] isPaid
+- int[] learningProgress
++ void buyItem(Item)
++ void eat()
++ void rest()
++ void work()
++ void study()
++ void travel(PlaceName)
++ void gainEducation(int)
++ void gainHappiness(int)
++ void reduceHappiness(int)
++ void gainMoney(int)
++ void reduceMoney(int)
++ void useTime(int)
++ int getRemainingTime()
++ int getMaxTimePerTurn()
++ void startTurn(boolean)
++ void endTurn()
++ boolean isWin(GameMode)
++ void setTransportation(Transportation)
++ void setTimeReduce(int)
++ void setCurrentLocation(PlaceName)
++ Stats getStats()
++ String getName()
++ void setJob(Job)
++ Inventory getInventory()
++ int getTimeUsed()
++ void setTimeUsed(int)
++ PlaceName getCurrentLocation()
++ Transportation getTransportation()
++ int getMAX_TIME_PER_TURN()
++ boolean isEat()
++ void setEat(boolean)
++ Job getJob()
++ boolean isEndTurn()
++ boolean[] getIsPaid()
++ int[] getLearningProgress()
+}
+
+
+class entity.items.Car {
++ void buyItem(Player)
+}
+
+class entity.jobs.Senior {
+}
+class entity.items.Scooter {
++ void buyItem(Player)
+}
+
+enum entity.base.PlaceName {
++  HOME
++  SCHOOL
++  STORE
++  THEATRE
++  WORKPLACE
+}
+
+
+
+entity.jobs.Job <|-- entity.jobs.Junior
+entity.base.Buyable <|.. entity.items.Uma
+entity.items.Item <|-- entity.items.Uma
+entity.jobs.Job <|-- entity.jobs.Director
+entity.jobs.Job <|-- entity.jobs.Newbie
+entity.base.Buyable <|.. entity.items.Valorant
+entity.items.Item <|-- entity.items.Valorant
+entity.base.Buyable <|.. entity.items.Item
+entity.base.Workable <|.. entity.jobs.Job
+entity.jobs.Job <|-- entity.jobs.Manager
+entity.base.Buyable <|.. entity.items.Fries
+entity.base.Eatable <|.. entity.items.Fries
+entity.items.Item <|-- entity.items.Fries
+entity.base.Buyable <|.. entity.items.Burger
+entity.base.Eatable <|.. entity.items.Burger
+entity.items.Item <|-- entity.items.Burger
+entity.base.Buyable <|.. entity.items.BigMeal
+entity.base.Eatable <|.. entity.items.BigMeal
+entity.items.Item <|-- entity.items.BigMeal
+entity.base.Buyable <|.. entity.items.Formula1
+entity.items.Item <|-- entity.items.Formula1
+javafx.application.Application <|-- application.Main
+entity.base.Buyable <|.. entity.items.PremierLeague
+entity.items.Item <|-- entity.items.PremierLeague
+entity.base.Buyable <|.. entity.items.Lottery
+entity.items.Item <|-- entity.items.Lottery
+entity.base.Buyable <|.. entity.items.Car
+entity.items.Item <|-- entity.items.Car
+entity.jobs.Job <|-- entity.jobs.Senior
+entity.base.Buyable <|.. entity.items.Scooter
+entity.items.Item <|-- entity.items.Scooter
+@enduml
