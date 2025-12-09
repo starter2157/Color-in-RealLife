@@ -8,8 +8,6 @@ public class SoundManager {
 
     private static AudioClip clickClip;
 
-    private static MediaPlayer cityBgm;
-
     static {
         try {
             clickClip = new AudioClip(
@@ -24,7 +22,7 @@ public class SoundManager {
             Media cityMedia = new Media(
                     SoundManager.class.getResource("/sounds/bgm_city.mp3").toExternalForm()
             );
-            cityBgm = new MediaPlayer(cityMedia);
+            MediaPlayer cityBgm = new MediaPlayer(cityMedia);
             cityBgm.setCycleCount(MediaPlayer.INDEFINITE); // loop
             cityBgm.setVolume(0.4); // เบาหน่อย
         } catch (Exception e) {
@@ -37,18 +35,4 @@ public class SoundManager {
         if (clickClip != null) clickClip.play();
     }
 
-
-    // ===== BGM เมือง =====
-    public static void playCityBgm() {
-        if (cityBgm != null) {
-            cityBgm.stop();
-            cityBgm.play();
-        }
-    }
-
-    public static void stopCityBgm() {
-        if (cityBgm != null) {
-            cityBgm.stop();
-        }
-    }
 }

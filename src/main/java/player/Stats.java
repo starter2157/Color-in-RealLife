@@ -1,7 +1,6 @@
 package player;
 
 import entity.base.GameMode;
-import logic.GameState;
 import logic.TurnSystem;
 
 public class Stats {

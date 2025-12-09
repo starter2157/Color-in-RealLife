@@ -73,9 +73,7 @@ public class ResultScreen {
         }
 
         // --- SORT BY MONEY DESC ---
-        List<Player> ranking = players.stream()
-                .sorted(Comparator.comparingInt(p -> -p.getStats().getPointSummation()))
-                .collect(Collectors.toList());
+        List<Player> ranking = players.stream().sorted(Comparator.comparingInt(p -> -p.getStats().getPointSummation())).toList();
 
         int rank = 1;
 
