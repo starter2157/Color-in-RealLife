@@ -98,7 +98,7 @@ public class GameScreen {
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
 
-            String portraitPath = "/icons/p" + (i + 1) + ".png";
+            String portraitPath = "/icons/Player " + (i + 1) + ".png";
             Image img = new Image(
                     getClass().getResource(portraitPath).toExternalForm()
             );
@@ -261,7 +261,7 @@ public class GameScreen {
                 "-fx-border-color: " + borderColor + ";" +
                 "-fx-border-width: 2;");
 
-        String portraitPath = "/icons/p" + (playerIndex + 1) + ".png";
+        String portraitPath = "/icons/Player " + (playerIndex + 1) + ".png";
         Image portraitImg = new Image(
                 GameScreen.class.getResource(portraitPath).toExternalForm()
         );
@@ -361,7 +361,7 @@ public class GameScreen {
             goHome.setOnFinished(ev -> {
 
                 if(gameState.isLastPlayerTurn() && player.isEndTurn()) {
-                    delayScreenChange(() -> getApp().showStartScreen());
+                    delayScreenChange(() -> app.showResultScreen(gameState));
                     Player winner = gameState.findWinner();
                     // Redirect to end screen
                 }

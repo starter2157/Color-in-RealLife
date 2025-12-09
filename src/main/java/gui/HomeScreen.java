@@ -86,7 +86,7 @@ public class HomeScreen {
         restBox.setAlignment(Pos.CENTER_RIGHT);
         restBox.setPadding(new Insets(0, 40, 40, 0));
 
-        Button btnRest = new Button("พักผ่อน (Rest)");
+        Button btnRest = new Button("Rest");
         btnRest.setFont(Font.font(18));
 
         Label statusLabel = new Label("");
@@ -97,14 +97,14 @@ public class HomeScreen {
 
             // TODO: เติม logic จริง เช่น เพิ่ม happiness / ลดเงิน / ใช้เทิร์น ฯลฯ
             if(p.isEndTurn()){
-                statusLabel.setText(p.getName() + " เวลาไม่พอออ!!!");
+                statusLabel.setText(p.getName() + " NoTime!!!");
             } else {
 
                 p.rest();
 
-                timeUsedLabel.setText("เวลา: " + current.getRemainingTime() + "/" + current.getMAX_TIME_PER_TURN());
+                timeUsedLabel.setText("Time: " + current.getRemainingTime() + "/" + current.getMAX_TIME_PER_TURN());
 
-                statusLabel.setText(p.getName() + " พักผ่อนเรียบร้อยแล้ว!");
+                statusLabel.setText(p.getName() + " Rested!");
             }
         });
 
@@ -118,7 +118,7 @@ public class HomeScreen {
             Player player = gameState.getCurrentPlayer();
             if(player.isEndTurn() && gameState.isLastPlayerTurn()){
                 Player winner = gameState.findWinner();
-                delayScreenChange(() -> getApp().showStartScreen()); // Maybe Redirect to End Screen and show winner
+                delayScreenChange(() -> getApp().showResultScreen(gameState)); // Maybe Redirect to End Screen and show winner
             }
             if(player.isEndTurn()){
                 player.setCurrentLocation(PlaceName.HOME);

@@ -98,6 +98,11 @@ public class Main extends Application {
         primaryStage.setScene(workplace.getScene());
     }
 
+    public void showResultScreen(GameState state) {
+        ResultScreen rs = new ResultScreen(this, state);
+        primaryStage.setScene(rs.getScene());
+    }
+
 
     public static void main(String[] args) {
         launch(args);
