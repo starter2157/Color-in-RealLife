@@ -100,10 +100,6 @@ public class Player {
         stats.setHappiness(stats.getHappiness() + happiness);
     }
 
-    public void reduceHappiness(int happiness){
-        stats.setHappiness(stats.getHappiness() - happiness);
-    }
-
     public void gainMoney(int money){
         stats.setMoney(stats.getMoney() + money);
     }
@@ -121,10 +117,6 @@ public class Player {
 
     public int getRemainingTime(){
         return MAX_TIME_PER_TURN - timeUsed;
-    }
-
-    public int getMaxTimePerTurn(){
-        return MAX_TIME_PER_TURN;
     }
 
     // Turn Management
@@ -155,10 +147,9 @@ public class Player {
     4. Mode Marathon Requirement (Till one Player meets requirement) */
 
     public boolean isWin(GameMode gameMode){
-        if ( stats.getMoney() >= TurnSystem.getMaxMoney(gameMode) &&
+        return stats.getMoney() >= TurnSystem.getMaxMoney(gameMode) &&
                 stats.getEducation() >= TurnSystem.getMaxEducation(gameMode) &&
-                stats.getHappiness() >= TurnSystem.getMaxHappiness(gameMode)) return true;
-        return false;
+                stats.getHappiness() >= TurnSystem.getMaxHappiness(gameMode);
     }
 
     // Getter and Setter

@@ -279,7 +279,7 @@ public class GameScreen {
                 "Education Level: " + p.getStats().getEducation() + " / " + TurnSystem.getMaxEducation(gameMode));
         educationLabel.setStyle("-fx-text-fill: white;");
         Label timeLabel = new Label(
-                "Time: " + p.getRemainingTime() + " / " + p.getMaxTimePerTurn());
+                "Time: " + p.getRemainingTime() + " / " + p.getMAX_TIME_PER_TURN());
         timeLabel.setStyle("-fx-text-fill: white;");
 
         box.getChildren().addAll(portrait, name, moneyRow, happyRow, educationLabel, timeLabel);
