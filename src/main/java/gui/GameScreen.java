@@ -51,7 +51,7 @@ public class GameScreen {
         this.app = app;
         GameScreen.gameState = gameState;
         this.scene = createScene();
-
+        //SoundManager.playCityBgm();
         // ไม่ resetCurrentPlayerToHome ที่นี่แล้ว
         // เพื่อให้กลับจาก Home/Store แล้ว player อยู่ตำแหน่งเดิม
         refreshUI();
@@ -145,27 +145,32 @@ public class GameScreen {
         // ไป Home → เดินก่อน พอถึงแล้วค่อยเข้า HomeScreen
         btnHome.setOnAction(e -> {
             System.out.println("Button Home clicked");
+            SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.HOME, () -> app.showHomeScreen(gameState));
         });
 
         // ไป Store → เดินก่อน พอถึงแล้วค่อยเข้า StoreScreen
         btnStore.setOnAction(e -> {
             System.out.println("Button Store clicked");
+            SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.STORE, () -> app.showStoreScreen(gameState));
         });
 
         btnThea.setOnAction(e -> {
             System.out.println("Button Theatre clicked");
+            SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.THEATRE, () -> app.showTheatreScreen(gameState));
         });
 
         btnSch.setOnAction(e -> {
             System.out.println("Button School clicked");
+            SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.SCHOOL, () -> app.showSchoolScreen(gameState));
         });
 
         btnWork.setOnAction(e -> {
             System.out.println("Button Workplace clicked");
+            SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.WORKPLACE, () -> app.showWorkplaceScreen(gameState));
         });
 
