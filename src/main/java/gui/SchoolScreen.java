@@ -4,6 +4,7 @@ import application.Main;
 import entity.base.PlaceName;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -28,15 +29,15 @@ public class SchoolScreen {
     private final GameState gameState;
     private final Scene scene;
 
-    private static final int LEVEL_COUNT = 4;
-    private static final int[] REQUIRED_STUDY_EACH_LEVEL = {5, 7, 10, 12};
-    private static final int[] COST_PER_LEVEL = {100, 200, 300, 400};
+    private final int LEVEL_COUNT = 4;
+    private final int[] REQUIRED_STUDY_EACH_LEVEL = {5, 7, 10, 12};
+    private final int[] COST_PER_LEVEL = {100, 200, 300, 400};
 
     private static final double WIDTH = 1080;
     private static final double HEIGHT = 720;
 
-    private static final Map<String, int[]> studyProgressByPlayer = new HashMap<>();
-    private static final Map<String, boolean[]> paidLevelByPlayer = new HashMap<>();
+    private final Map<String, int[]> studyProgressByPlayer = new HashMap<>();
+    private final Map<String, boolean[]> paidLevelByPlayer = new HashMap<>();
 
     private Label[] progressLabels = new Label[LEVEL_COUNT];
     private Button[] studyButtons = new Button[LEVEL_COUNT];
@@ -81,7 +82,7 @@ public class SchoolScreen {
         levelRow.setAlignment(Pos.CENTER);
 
         for (int i = 0; i < LEVEL_COUNT; i++) {
-            levelRow.getChildren().add(createLevelCard(i, current));
+            levelRow.getChildren().add(createLevelCard(i, current, statusBox.getChildren().get(1), statusBox.getChildren().get(4), statusBox.getChildren().get(3)));
         }
 
         ui.setCenter(levelRow);
@@ -92,18 +93,9 @@ public class SchoolScreen {
 
         backBtn.setOnAction(e -> {
             app.showGameScreen(gameState);
-
             Player player = gameState.getCurrentPlayer();
-
-            // End turn logic like in HomeScreen
-            if (player.isEndTurn() && gameState.isLastPlayerTurn()) {
-                Player winner = gameState.findWinner();
-                delayScreenChange(() -> getApp().showResultScreen(gameState));
-            }
-            if (player.isEndTurn()) {
-                player.setCurrentLocation(PlaceName.HOME);
-                player.endTurn();
-                gameState.nextPlayerTurn();
+            if(player.isEndTurn()){
+                GameScreen.resetCurrentPlayerToHome(player.getCurrentLocation());
                 refreshUI();
             }
         });
@@ -138,16 +130,16 @@ public class SchoolScreen {
         Label nameLabel = new Label(current.getName());
         nameLabel.setStyle("-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: bold;");
 
-        Label moneyLabel = new Label("Money: " + stats.getMoney() + "/" + TurnSystem.getMaxMoney(gameMode));
+        Label moneyLabel = new Label("Money: " + stats.getMoney() + " / " + TurnSystem.getMaxMoney(gameMode));
         moneyLabel.setStyle("-fx-text-fill: white;");
 
-        Label happyLabel = new Label("Happiness: " + stats.getHappiness() + "/" + TurnSystem.getMaxHappiness(gameMode));
+        Label happyLabel = new Label("Happiness: " + stats.getHappiness() + " / " + TurnSystem.getMaxHappiness(gameMode));
         happyLabel.setStyle("-fx-text-fill: white;");
 
-        Label eduLabel = new Label("Education: " + stats.getEducation() + "/" + TurnSystem.getMaxEducation(gameMode));
+        Label eduLabel = new Label("Education Level: " + stats.getEducation() + " / " + TurnSystem.getMaxEducation(gameMode));
         eduLabel.setStyle("-fx-text-fill: white;");
 
-        Label timeLabel = new Label("Time: " + current.getRemainingTime() + "/" + current.getMAX_TIME_PER_TURN());
+        Label timeLabel = new Label("Time: " + current.getRemainingTime() + " / " + current.getMAX_TIME_PER_TURN());
         timeLabel.setStyle("-fx-text-fill: white;");
 
         box.getChildren().addAll(nameLabel, moneyLabel, happyLabel, eduLabel, timeLabel);
@@ -158,7 +150,7 @@ public class SchoolScreen {
     // -----------------------------------------------------
     //  CREATE LEVEL CARD
     // -----------------------------------------------------
-    private VBox createLevelCard(int levelIndex, Player currentPlayer) {
+    private VBox createLevelCard(int levelIndex, Player currentPlayer, Node moneyLabel, Node timeLabel, Node educationLabel) {
         int levelNum = levelIndex + 1;
 
         VBox box = new VBox(8);
@@ -198,7 +190,13 @@ public class SchoolScreen {
         btnStudy.setFont(Font.font(14));
         studyButtons[levelIndex] = btnStudy;
 
-        btnStudy.setOnAction(e -> handleStudy(levelIndex, currentPlayer));
+        btnStudy.setOnAction(e -> {
+            handleStudy(levelIndex, currentPlayer);
+            ((Label) educationLabel).setText("Education Level: " + currentPlayer.getStats().getEducation() + " / " + TurnSystem.getMaxEducation(gameMode));
+            ((Label) timeLabel).setText("Time: " + currentPlayer.getRemainingTime() + " / " + currentPlayer.getMAX_TIME_PER_TURN());
+            ((Label) moneyLabel).setText("Money: " + currentPlayer.getStats().getMoney() + " / " + TurnSystem.getMaxMoney(gameMode));
+
+        });
 
         box.getChildren().addAll(icon, title, desc, progress, btnStudy);
 
@@ -246,7 +244,7 @@ public class SchoolScreen {
             return false;
         }
 
-        stats.setMoney(-cost);
+        player.reduceMoney(cost);
         showPopup("สมัครเรียนสำเร็จ", "คุณจ่าย " + cost + " ฿");
 
         return true;

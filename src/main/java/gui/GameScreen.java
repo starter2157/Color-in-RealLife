@@ -204,7 +204,6 @@ public class GameScreen {
 
         btnEndTurn.setOnAction(e -> {
             gameState.nextPlayerTurn();
-            // เริ่มเทิร์นใหม่ → ส่งคนถัดไปกลับ HOME
             resetCurrentPlayerToHome(gameState.getCurrentPlayer().getCurrentLocation());
             refreshUI();
         });
@@ -361,9 +360,8 @@ public class GameScreen {
             goHome.setOnFinished(ev -> {
 
                 if(gameState.isLastPlayerTurn() && player.isEndTurn()) {
-                    delayScreenChange(() -> app.showResultScreen(gameState));
-                    Player winner = gameState.findWinner();
                     // Redirect to end screen
+                    delayScreenChange(() -> app.showResultScreen(gameState));
                 }
 
                 // Set logical position to HOME
@@ -426,11 +424,18 @@ public class GameScreen {
             refreshUI();
 
             // ถ้าใช้เวลาเกินเทิร์น → จบเทิร์น + เปลี่ยนคนเล่น + กลับ HOME
-            if (player.isEndTurn()) {
+            if (player.isEndTurn() && player.getCurrentLocation() != PlaceName.HOME) {
                 resetCurrentPlayerToHome(destination);
+            } else if (player.isEndTurn() && player.getCurrentLocation() == PlaceName.HOME){
+                if(gameState.isLastPlayerTurn() && player.isEndTurn()) {
+                    delayScreenChange(() -> app.showResultScreen(gameState));
+                }
+                player.endTurn();
+                gameState.nextPlayerTurn();
+                refreshUI();
+                root.setDisable(false);
             } else {
                 root.setDisable(false);
-                // ยังอยู่ในเทิร์นเดิม → เรียก callback (เข้า HomeScreen / StoreScreen) ถ้ามี
                 if (onArrive != null) {
                     onArrive.run();
                 }
