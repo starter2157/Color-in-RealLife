@@ -119,11 +119,11 @@ public class StoreScreen {
 
         addItemCard(grid, 2, 0,
                 "/storeItem/scooter.png", new Lottery(),
-                current, moneyLabel, statusLabel);
+                current, moneyLabel, timeUsedLabel,happyLabel, statusLabel);
 
         addItemCard(grid, 2, 1,
                 "/storeItem/car.png", new Lottery(),
-                current, moneyLabel, statusLabel);
+                current, moneyLabel, timeUsedLabel,happyLabel, statusLabel);
 
         VBox centerBox = new VBox(10, grid, statusLabel);
         centerBox.setAlignment(Pos.TOP_CENTER);
