@@ -45,7 +45,7 @@ public class Player {
 
     public void rest(){
         useTime(60);
-        reduceStress(1);
+        gainHappiness(20);
     }
 
     public void work(){
@@ -55,7 +55,6 @@ public class Player {
 
     public void study(){
         useTime(90);
-        gainStress(2);
         gainEducation(1);
         if(stats.getEducation() == 34) setJob(new Director());
         else if(stats.getEducation() == 22) setJob(new Manager());
@@ -90,14 +89,6 @@ public class Player {
     }
 
     // Adjust Player Stats
-
-    public void gainStress(int stress){
-        stats.setStress(stats.getStress() + stress);
-    }
-
-    public void reduceStress(int stress){
-        stats.setStress(stats.getStress() - stress);
-    }
 
     public void gainEducation(int education){
         stats.setEducation(stats.getEducation() + education);
@@ -138,7 +129,7 @@ public class Player {
 
     public void startTurn(boolean isFirstTurn){
         this.setTimeUsed(0);
-        if(!isEat() && !isFirstTurn) useTime(80);
+        if(!isEat() && !isFirstTurn) useTime(120);
         else setEat(false);
     }
 

@@ -2,7 +2,6 @@ package player;
 
 public class Stats {
     private int education;
-    private int stress;
     private int happiness;
     private int money;
 
@@ -10,7 +9,6 @@ public class Stats {
 
     public Stats(){
         this.education = 0;
-        this.stress = 0;
         this.happiness = 0;
         this.money = 200;
     }
@@ -23,15 +21,6 @@ public class Stats {
 
     public void setEducation(int education) {
         this.education = Math.max(0, education);
-    }
-
-    public int getStress() {
-        return stress;
-    }
-
-    public void setStress(int stress) {
-        this.stress = Math.max(0, stress);
-        this.stress = Math.min(this.stress, 10);
     }
 
     public int getHappiness() {
