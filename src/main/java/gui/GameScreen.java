@@ -1,6 +1,7 @@
 package gui;
 
 import application.Main;
+import entity.base.GameMode;
 import entity.base.PlaceName;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -18,6 +19,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import logic.GameState;
+import logic.TurnSystem;
 import player.Player;
 
 import javax.print.attribute.standard.Destination;
@@ -30,6 +32,7 @@ public class GameScreen {
 
     private static Main app = null;
     private static GameState gameState = null;
+    public static GameMode gameMode;
     private Scene scene;
 
     private ImageView mapView;
@@ -50,11 +53,11 @@ public class GameScreen {
                     + "-fx-padding: 10;"
                     + "-fx-background-radius: 10;";
 
-    public GameScreen(Main app, GameState gameState) {
+    public GameScreen(Main app, GameState gameState, GameMode gameMode) {
         this.app = app;
         GameScreen.gameState = gameState;
         this.scene = createScene();
-
+        this.gameMode = gameMode;
         refreshUI();
     }
 
@@ -266,16 +269,17 @@ public class GameScreen {
         name.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16;");
 
         HBox moneyRow = statRow("/icons/money.png",
-                " " + p.getStats().getMoney());
+                " " + p.getStats().getMoney() + " / " + TurnSystem.getMaxMoney(gameMode));
         HBox happyRow = statRow("/icons/happy.png",
-                " " + p.getStats().getHappiness());
-
+                " " + p.getStats().getHappiness() + " / " + TurnSystem.getMaxHappiness(gameMode));
+        Label educationLabel = new Label(
+                "Education Level: " + p.getStats().getEducation() + " / " + TurnSystem.getMaxEducation(gameMode));
+        educationLabel.setStyle("-fx-text-fill: white;");
         Label timeLabel = new Label(
-                "Time: " + p.getRemainingTime() + " / " + p.getMaxTimePerTurn()
-        );
+                "Time: " + p.getRemainingTime() + " / " + p.getMaxTimePerTurn());
         timeLabel.setStyle("-fx-text-fill: white;");
 
-        box.getChildren().addAll(portrait, name, moneyRow, happyRow, timeLabel);
+        box.getChildren().addAll(portrait, name, moneyRow, happyRow, educationLabel, timeLabel);
         return box;
     }
 
@@ -378,11 +382,6 @@ public class GameScreen {
 
     }
 
-    // เวอร์ชันเดิม ใช้ในปุ่มธรรมดา
-    public void moveCurrentPlayerTo(PlaceName destination) {
-        moveCurrentPlayerTo(destination, null);
-    }
-
     // เวอร์ชันใหม่: ส่ง callback มาให้ทำหลังเดินถึงที่หมาย (และยังไม่หมดเทิร์น)
     private static void moveCurrentPlayerTo(PlaceName destination, Runnable onArrive) {
         int idx = gameState.getCurrentPlayerIndex();
@@ -449,10 +448,8 @@ public class GameScreen {
 
     public static void showTurnBanner(String turnNumber) {
 
-        // Disable entire screen while showing banner
-        root.setDisable(true);
+        Label banner = new Label(turnNumber);
 
-        Label banner = new Label("Turn " + turnNumber);
         banner.setStyle(
                 "-fx-font-size: 64px;" +
                         "-fx-font-weight: bold;" +
@@ -476,7 +473,6 @@ public class GameScreen {
 
         delay.setOnFinished(e -> {
             root.getChildren().remove(banner);
-            root.setDisable(false);  // Re-enable interaction
         });
 
         delay.play();
