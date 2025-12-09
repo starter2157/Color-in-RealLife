@@ -10,17 +10,17 @@ import logic.TurnSystem;
 
 public class Player {
     private final String name;
-    private Stats stats;
+    private final Stats stats;
     private Job job;
-    private Inventory inventory;
+    private final Inventory inventory;
     private int timeUsed;
     private int timeReduce;
     private PlaceName currentLocation;
     private Transportation transportation;
     private final int MAX_TIME_PER_TURN = 600;
     private boolean isEat = false;
-    private boolean[] isPaid = {false, false, false, false};
-    private int[] learningProgress = {0, 0, 0, 0};
+    private final boolean[] isPaid = {false, false, false, false};
+    private final int[] learningProgress = {0, 0, 0, 0};
 
     // Player Initialize
 

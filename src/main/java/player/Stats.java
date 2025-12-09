@@ -23,7 +23,7 @@ public class Stats {
     public void setPointSummation(GameMode gameMode) {
         pointSummation += Math.min(getMoney(), TurnSystem.getMaxMoney(gameMode));
         pointSummation += Math.min(getHappiness(), TurnSystem.getMaxHappiness(gameMode));
-        pointSummation += Math.min(getEducation(), TurnSystem.getMaxEducation(gameMode)) * 8;
+        pointSummation += Math.min(getEducation(), TurnSystem.getMaxEducation(gameMode)) * 140;
     }
 
     public int getPointSummation(){
