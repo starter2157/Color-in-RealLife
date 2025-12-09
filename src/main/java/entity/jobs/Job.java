@@ -4,7 +4,7 @@ import entity.base.Workable;
 import player.Player;
 
 public class Job implements Workable {
-    protected int salary;
+    private final int salary;
 
     public Job (int salary) {
         this.salary = salary;

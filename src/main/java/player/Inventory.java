@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Inventory {
 
-    private List<Lottery> items;
+    private final List<Lottery> items;
     private int numberOfItem;
 
     public Inventory(){
