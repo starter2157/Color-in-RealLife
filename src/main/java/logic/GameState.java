@@ -1,6 +1,7 @@
 package logic;
 
 import entity.base.GameMode;
+import gui.GameScreen;
 import player.Player;
 import player.Stats;
 
@@ -46,7 +47,11 @@ public class GameState {
             currentPlayerIndex = 0;
             currentTurn++;
             isFirstTurn = false;
-            if(currentTurn == maxTurn || isPlayerWin) isLastTurn = true;
+            GameScreen.showTurnBanner(String.valueOf(currentTurn));
+            if(currentTurn == maxTurn || isPlayerWin) {
+                GameScreen.showTurnBanner("Last Turn");
+                isLastTurn = true;
+            }
         }
     }
 
@@ -88,5 +93,7 @@ public class GameState {
         return isLastTurn;
     }
 
-
+    public int getCurrentTurn() {
+        return currentTurn;
+    }
 }

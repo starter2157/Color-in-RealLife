@@ -375,6 +375,7 @@ public class GameScreen {
             token.setLayoutX(homePt.getX());
             token.setLayoutY(homePt.getY());
         }
+
     }
 
     // เวอร์ชันเดิม ใช้ในปุ่มธรรมดา
@@ -443,6 +444,41 @@ public class GameScreen {
     public static void delayScreenChange(Runnable action) {
         PauseTransition delay = new PauseTransition(Duration.seconds(2));
         delay.setOnFinished(e -> action.run());
+        delay.play();
+    }
+
+    public static void showTurnBanner(String turnNumber) {
+
+        // Disable entire screen while showing banner
+        root.setDisable(true);
+
+        Label banner = new Label("Turn " + turnNumber);
+        banner.setStyle(
+                "-fx-font-size: 64px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: black;" +
+                        "-fx-background-color: rgba(135,206,250,0.9);" +  // sky-blue box
+                        "-fx-padding: 20 60;" +
+                        "-fx-background-radius: 20;" +
+                        "-fx-border-color: navy;" +
+                        "-fx-border-width: 4;" +
+                        "-fx-border-radius: 20;"
+        );
+
+        // Center on screen
+        banner.setLayoutX(1080 / 2.0 - 200);
+        banner.setLayoutY(720 / 2.0 - 100);
+
+        root.getChildren().add(banner);
+
+        // Show for 3 seconds then fade out and remove
+        PauseTransition delay = new PauseTransition(Duration.seconds(3));
+
+        delay.setOnFinished(e -> {
+            root.getChildren().remove(banner);
+            root.setDisable(false);  // Re-enable interaction
+        });
+
         delay.play();
     }
 

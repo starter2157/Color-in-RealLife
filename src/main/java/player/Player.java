@@ -15,7 +15,7 @@ public class Player {
     private int timeReduce;
     private PlaceName currentLocation;
     private Transportation transportation;
-    private final int MAX_TIME_PER_TURN = 720;
+    private final int MAX_TIME_PER_TURN = 600;
     private boolean isEat = false;
 
 
