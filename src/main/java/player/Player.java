@@ -5,6 +5,7 @@ import entity.base.Transportation;
 import entity.items.Item;
 import entity.base.PlaceName;
 import entity.jobs.*;
+import logic.TurnSystem;
 
 public class Player {
     private final String name;
@@ -165,22 +166,10 @@ public class Player {
         - happiness 4000 */
 
     public boolean isWin(GameMode gameMode){
-        if (gameMode.equals(GameMode.SHORT) &&
-                stats.getMoney() >= 1200 &&
-                stats.getEducation() >= 15 &&
-                stats.getHappiness() >= 500) return true;
-        else if(gameMode.equals(GameMode.MEDIUM) &&
-                stats.getMoney() >= 2500 &&
-                stats.getEducation() >= 25 &&
-                stats.getHappiness() >= 750) return true;
-        else if(gameMode.equals(GameMode.LONG) &&
-                stats.getMoney() >= 4000 &&
-                stats.getEducation() >= 40 &&
-                stats.getHappiness() >= 1500) return true;
-        else return gameMode.equals(GameMode.MARATHON) &&
-                    stats.getMoney() >= 10000 &&
-                    stats.getEducation() >= 82 &&
-                    stats.getHappiness() >= 4000;
+        if ( stats.getMoney() >= TurnSystem.getMaxMoney(gameMode) &&
+                stats.getEducation() >= TurnSystem.getMaxEducation(gameMode) &&
+                stats.getHappiness() >= TurnSystem.getMaxHappiness(gameMode)) return true;
+        return false;
     }
 
     // Getter and Setter

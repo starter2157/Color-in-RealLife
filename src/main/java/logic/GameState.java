@@ -42,16 +42,17 @@ public class GameState {
     public void nextPlayerIndex(){
         if (getCurrentPlayer().isWin(gameMode)) isPlayerWin = true;
         currentPlayerIndex++;
-        if (isLastTurn && currentPlayerIndex == 1) isLastPlayerTurn = true;
+        if (isLastTurn && currentPlayerIndex == players.size() - 1) isLastPlayerTurn = true;
         if (currentPlayerIndex >= players.size()) {
             currentPlayerIndex = 0;
             currentTurn++;
             isFirstTurn = false;
-            GameScreen.showTurnBanner(String.valueOf(currentTurn));
             if(currentTurn == maxTurn || isPlayerWin) {
                 GameScreen.showTurnBanner("Last Turn");
                 isLastTurn = true;
             }
+            else if(!isLastPlayerTurn) GameScreen.showTurnBanner("Turn " + currentTurn);
+            else GameScreen.showTurnBanner("GAME END");
         }
     }
 
@@ -63,9 +64,9 @@ public class GameState {
         Player winner = null;
         for (Player player : players){
             Stats playerStats = player.getStats();
-            playerPoint += playerStats.getEducation();
-            playerPoint += playerStats.getHappiness();
-            playerPoint += playerStats.getMoney();
+            playerPoint += Math.min(playerStats.getEducation(), TurnSystem.getMaxEducation(gameMode));
+            playerPoint += Math.min(playerStats.getHappiness(), TurnSystem.getMaxHappiness(gameMode));
+            playerPoint += Math.min(playerStats.getMoney(), TurnSystem.getMaxMoney(gameMode));
             if(playerPoint > maxPoint) winner = player;
         }
         return winner;
