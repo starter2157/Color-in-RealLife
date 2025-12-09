@@ -6,12 +6,13 @@ import player.Player;
 public class Formula1 extends Item implements Buyable {
 
     public Formula1(){
-        super("Formula 1", 75);
+        super("Formula 1", 125);
     }
 
     @Override
     public void buyItem(Player player){
         player.reduceMoney(getPrice());
-        player.gainHappiness(12);
+        player.gainHappiness(35);
+        player.useTime(60);
     }
 }
