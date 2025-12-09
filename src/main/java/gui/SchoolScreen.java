@@ -5,6 +5,7 @@ import entity.base.PlaceName;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -12,22 +13,15 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import logic.GameState;
+import logic.TurnSystem;
 import player.Player;
+import player.Stats;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static gui.GameScreen.refreshUI;
+import static gui.GameScreen.*;
 
-/**
- * หน้าจอโรงเรียน (School) ให้ผู้เล่นมา "เรียน" เป็นขั้น ๆ
- * - มีทั้งหมด 4 ขั้น (level 1..4)
- * - แต่ละขั้นต้องเรียนอย่างน้อย 5 ครั้ง ถึงจะถือว่าเคลียร์
- * - ขั้นถัดไปจะปลดล็อกก็ต่อเมื่อขั้นก่อนหน้าถูกเรียนครบ 5 ครั้งแล้ว
- *
- * NOTE:
- *  - ความก้าวหน้าจะถูกเก็บแบบ static ตามชื่อ player
- */
 public class SchoolScreen {
 
     private final Main app;
@@ -36,13 +30,14 @@ public class SchoolScreen {
 
     private static final int LEVEL_COUNT = 4;
     private static final int[] REQUIRED_STUDY_EACH_LEVEL = {5, 7, 10, 12};
+    private static final int[] COST_PER_LEVEL = {100, 200, 300, 400};
+
     private static final double WIDTH = 1080;
     private static final double HEIGHT = 720;
 
-    // เก็บจำนวนครั้งที่เรียนต่อ player ต่อ level: playerName -> [4 ช่อง]
     private static final Map<String, int[]> studyProgressByPlayer = new HashMap<>();
+    private static final Map<String, boolean[]> paidLevelByPlayer = new HashMap<>();
 
-    // UI refs
     private Label[] progressLabels = new Label[LEVEL_COUNT];
     private Button[] studyButtons = new Button[LEVEL_COUNT];
 
@@ -57,40 +52,33 @@ public class SchoolScreen {
     }
 
     private Scene createScene() {
+
         Player current = gameState.getCurrentPlayer();
-        String playerKey = current.getName();
+        String key = current.getName();
 
-        // ถ้ายังไม่เคยมี progress ของ player นี้ ให้สร้างใหม่
-        studyProgressByPlayer.putIfAbsent(playerKey, new int[LEVEL_COUNT]);
+        studyProgressByPlayer.putIfAbsent(key, new int[LEVEL_COUNT]);
+        paidLevelByPlayer.putIfAbsent(key, new boolean[LEVEL_COUNT]);
 
-        // ====== BG ======
-        ImageView bg = new ImageView(
-                new Image(getClass().getResource("/school_bg.png").toExternalForm())
-        );
+        // ---------- Background ----------
+        ImageView bg = new ImageView(new Image(
+                getClass().getResource("/school_bg.png").toExternalForm()
+        ));
         bg.setFitWidth(WIDTH);
         bg.setFitHeight(HEIGHT);
         bg.setPreserveRatio(false);
-        bg.setSmooth(true);
 
+        // ---------- UI Layer ----------
         BorderPane ui = new BorderPane();
         ui.setPadding(new Insets(20));
 
-        // ====== TOP ======
-        Label title = new Label("School");
-        title.setStyle("-fx-text-fill: #333333; -fx-font-size: 28; -fx-font-weight: bold;");
+        // ---------- LEFT: STATUS PANEL ----------
+        VBox statusBox = createStatusBox(current);
+        ui.setLeft(statusBox);
 
-        Label playerLabel = new Label("Student: " + current.getName());
-        playerLabel.setStyle("-fx-text-fill: #555555; -fx-font-size: 16;");
-
-        VBox topBox = new VBox(5, title, playerLabel);
-        topBox.setAlignment(Pos.CENTER);
-        topBox.setPadding(new Insets(10, 0, 20, 0));
-        ui.setTop(topBox);
-
-        // ====== CENTER: 4 Level ======
+        // ---------- CENTER: LEVEL CARDS ----------
         HBox levelRow = new HBox(40);
-        levelRow.setAlignment(Pos.CENTER);
         levelRow.setPadding(new Insets(20));
+        levelRow.setAlignment(Pos.CENTER);
 
         for (int i = 0; i < LEVEL_COUNT; i++) {
             levelRow.getChildren().add(createLevelCard(i, current));
@@ -98,14 +86,24 @@ public class SchoolScreen {
 
         ui.setCenter(levelRow);
 
-        // ====== BOTTOM: Back ======
+        // ---------- BOTTOM: Back button ----------
         Button backBtn = new Button("Back to City");
         backBtn.setFont(Font.font(16));
+
         backBtn.setOnAction(e -> {
             app.showGameScreen(gameState);
+
             Player player = gameState.getCurrentPlayer();
-            if(player.isEndTurn()){
-                GameScreen.resetCurrentPlayerToHome(player.getCurrentLocation());
+
+            // End turn logic like in HomeScreen
+            if (player.isEndTurn() && gameState.isLastPlayerTurn()) {
+                Player winner = gameState.findWinner();
+                delayScreenChange(() -> getApp().showResultScreen(gameState));
+            }
+            if (player.isEndTurn()) {
+                player.setCurrentLocation(PlaceName.HOME);
+                player.endTurn();
+                gameState.nextPlayerTurn();
                 refreshUI();
             }
         });
@@ -115,136 +113,183 @@ public class SchoolScreen {
         bottomBox.setPadding(new Insets(10));
         ui.setBottom(bottomBox);
 
+        // ---------- Root Stack ----------
         StackPane root = new StackPane(bg, ui);
 
-        // update UI ให้ตรงกับ progress
         refreshLevelUI(current);
 
         return new Scene(root, WIDTH, HEIGHT);
     }
 
-    // สร้างการ์ด 1 level
+    // -----------------------------------------------------
+    //  STATUS BOX (เหมือน HomeScreen เป๊ะ)
+    // -----------------------------------------------------
+    private VBox createStatusBox(Player current) {
+        Stats stats = current.getStats();
+
+        VBox box = new VBox(10);
+        box.setPadding(new Insets(20));
+        box.setStyle(
+                "-fx-background-color: rgba(0,0,0,0.55);" +
+                        "-fx-background-radius: 10;"
+        );
+        box.setPrefWidth(220);
+
+        Label nameLabel = new Label(current.getName());
+        nameLabel.setStyle("-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: bold;");
+
+        Label moneyLabel = new Label("Money: " + stats.getMoney() + "/" + TurnSystem.getMaxMoney(gameMode));
+        moneyLabel.setStyle("-fx-text-fill: white;");
+
+        Label happyLabel = new Label("Happiness: " + stats.getHappiness() + "/" + TurnSystem.getMaxHappiness(gameMode));
+        happyLabel.setStyle("-fx-text-fill: white;");
+
+        Label eduLabel = new Label("Education: " + stats.getEducation() + "/" + TurnSystem.getMaxEducation(gameMode));
+        eduLabel.setStyle("-fx-text-fill: white;");
+
+        Label timeLabel = new Label("Time: " + current.getRemainingTime() + "/" + current.getMAX_TIME_PER_TURN());
+        timeLabel.setStyle("-fx-text-fill: white;");
+
+        box.getChildren().addAll(nameLabel, moneyLabel, happyLabel, eduLabel, timeLabel);
+
+        return box;
+    }
+
+    // -----------------------------------------------------
+    //  CREATE LEVEL CARD
+    // -----------------------------------------------------
     private VBox createLevelCard(int levelIndex, Player currentPlayer) {
-        int levelNumber = levelIndex + 1;
+        int levelNum = levelIndex + 1;
 
         VBox box = new VBox(8);
         box.setAlignment(Pos.TOP_CENTER);
         box.setPadding(new Insets(10));
         box.setPrefWidth(220);
-
         box.setStyle(
-                "-fx-background-color: rgba(255,255,255,0.95);"
-                        + "-fx-background-radius: 10;"
-                        + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25),5,0,0,2);"
+                "-fx-background-color: rgba(255,255,255,0.95);" +
+                        "-fx-background-radius: 10;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 5, 0, 0, 2);"
         );
 
-        String imagePath = "/schoolItem/step" + levelNumber + ".png";
-
+        String imgPath = "/schoolItem/step" + levelNum + ".png";
         ImageView icon;
         try {
-            icon = new ImageView(
-                    new Image(getClass().getResource(imagePath).toExternalForm())
-            );
+            icon = new ImageView(new Image(getClass().getResource(imgPath).toExternalForm()));
         } catch (Exception e) {
             icon = new ImageView();
-            System.out.println("WARN: school image not found: " + imagePath);
         }
         icon.setFitWidth(180);
         icon.setFitHeight(140);
         icon.setPreserveRatio(true);
 
-        Label levelTitle = new Label("Level " + levelNumber);
-        levelTitle.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
+        Label title = new Label("Level " + levelNum);
+        title.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
 
-        Label desc = new Label("เรียนขั้นนี้อย่างน้อย " + REQUIRED_STUDY_EACH_LEVEL[levelIndex] + " ครั้ง");
-        desc.setStyle("-fx-font-size: 12; -fx-text-fill: #555555;");
+        Label desc = new Label(
+                "เรียนขั้นต่ำ " + REQUIRED_STUDY_EACH_LEVEL[levelIndex] + " ครั้ง\n" +
+                        "ค่าลงทะเบียนครั้งเดียว " + COST_PER_LEVEL[levelIndex] + " ฿"
+        );
         desc.setWrapText(true);
 
         Label progress = new Label("0 / " + REQUIRED_STUDY_EACH_LEVEL[levelIndex]);
-        progress.setStyle("-fx-font-size: 14; -fx-text-fill: #333333;");
         progressLabels[levelIndex] = progress;
 
-        Button studyBtn = new Button("เรียน");
-        studyBtn.setFont(Font.font(14));
-        studyButtons[levelIndex] = studyBtn;
+        Button btnStudy = new Button("เรียน");
+        btnStudy.setFont(Font.font(14));
+        studyButtons[levelIndex] = btnStudy;
 
-        studyBtn.setOnAction(e -> {
-            String key = currentPlayer.getName();
-            int[] arr = studyProgressByPlayer.computeIfAbsent(key, k -> new int[LEVEL_COUNT]);
+        btnStudy.setOnAction(e -> handleStudy(levelIndex, currentPlayer));
 
-            // ถ้า level นี้ยังไม่ unlock ก็ไม่ให้เรียน or end turn
-            if (!isLevelUnlocked(key, levelIndex) || currentPlayer.isEndTurn()) {
-                return;
-            }
+        box.getChildren().addAll(icon, title, desc, progress, btnStudy);
 
-            // เพิ่มจำนวนเรียน 1 ครั้ง (สามารถเกิน 5 ได้)
-            arr[levelIndex]++;
-
-            // TODO: ใส่ logic เพิ่ม stat / หักเวลา ฯลฯ ได้ตรงนี้
-            currentPlayer.study();
-
-            // อัปเดตทุกปุ่มและ progress อีกครั้ง
-            refreshLevelUI(currentPlayer);
-        });
-
-        box.getChildren().addAll(icon, levelTitle, desc, progress, studyBtn);
         return box;
     }
 
-    // level 0 ปลดล็อกเสมอ, level i>0 ปลดล็อกเมื่อ level i-1 เรียนครบ 5 ครั้ง
-    private boolean isLevelUnlocked(String playerKey, int levelIndex) {
-        int[] arr = studyProgressByPlayer.computeIfAbsent(playerKey, k -> new int[LEVEL_COUNT]);
+    // -----------------------------------------------------
+    //  HANDLE STUDY BUTTON
+    // -----------------------------------------------------
+    private void handleStudy(int levelIndex, Player player) {
+        String key = player.getName();
+        int[] progress = studyProgressByPlayer.get(key);
+        boolean[] paid = paidLevelByPlayer.get(key);
+
+        if (!isLevelUnlocked(key, levelIndex) || player.isEndTurn()) return;
+
+        // pay registration fee
+        if (!paid[levelIndex]) {
+            if (!payForLevel(player, levelIndex)) {
+                return;
+            }
+            paid[levelIndex] = true;
+        }
+
+        // update progress
+        progress[levelIndex]++;
+
+        // call player action
+        player.study();
+
+        // refresh UI
+        refreshLevelUI(player);
+        refreshUI(); // update game board display
+    }
+
+    // -----------------------------------------------------
+    //  PAY REGISTRATION FEE
+    // -----------------------------------------------------
+    private boolean payForLevel(Player player, int levelIndex) {
+        int cost = COST_PER_LEVEL[levelIndex];
+        Stats stats = player.getStats();
+
+        if (stats.getMoney() < cost) {
+            showPopup("เงินไม่พอ", "ต้องใช้เงิน " + cost + " ฿");
+            return false;
+        }
+
+        stats.setMoney(-cost);
+        showPopup("สมัครเรียนสำเร็จ", "คุณจ่าย " + cost + " ฿");
+
+        return true;
+    }
+
+    private void showPopup(String header, String content) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setHeaderText(header);
+        a.setContentText(content);
+        a.showAndWait();
+    }
+
+    // -----------------------------------------------------
+    //  CHECK LEVEL UNLOCK
+    // -----------------------------------------------------
+    private boolean isLevelUnlocked(String key, int levelIndex) {
         if (levelIndex == 0) return true;
+
+        int[] arr = studyProgressByPlayer.get(key);
         return arr[levelIndex - 1] >= REQUIRED_STUDY_EACH_LEVEL[levelIndex - 1];
     }
 
-    // อัปเดตตัวเลข progress และ enable/disable ปุ่มตามเงื่อนไข
-    private void refreshLevelUI(Player currentPlayer) {
-        String key = currentPlayer.getName();
-        int[] arr = studyProgressByPlayer.computeIfAbsent(key, k -> new int[LEVEL_COUNT]);
+    // -----------------------------------------------------
+    //  REFRESH LEVEL UI
+    // -----------------------------------------------------
+    private void refreshLevelUI(Player player) {
+        String key = player.getName();
+        int[] arr = studyProgressByPlayer.get(key);
 
         for (int i = 0; i < LEVEL_COUNT; i++) {
             int count = arr[i];
 
-            // update progress label
-            if (progressLabels[i] != null) {
-                progressLabels[i].setText(count + " / " + REQUIRED_STUDY_EACH_LEVEL[i]);
+            progressLabels[i].setText(count + " / " + REQUIRED_STUDY_EACH_LEVEL[i]);
 
-                if (count >= REQUIRED_STUDY_EACH_LEVEL[i]) {
-                    progressLabels[i].setStyle(
-                            "-fx-font-size: 14;"
-                                    + "-fx-text-fill: #2e7d32;"
-                                    + "-fx-font-weight: bold;"
-                    );
-                } else {
-                    progressLabels[i].setStyle(
-                            "-fx-font-size: 14;"
-                                    + "-fx-text-fill: #333333;"
-                    );
-                }
-            }
+            boolean unlocked = (i == 0) || (arr[i - 1] >= REQUIRED_STUDY_EACH_LEVEL[i - 1]);
 
-            // update button enable/disable
-            if (studyButtons[i] != null) {
-
-                boolean unlocked;
-
-                // Level 1 always unlocked
-                if (i == 0) {
-                    unlocked = true;
-                } else {
-                    unlocked = arr[i - 1] >= REQUIRED_STUDY_EACH_LEVEL[i - 1];
-                }
-
-                // 🔥 ถ้าขั้นนี้เรียนครบแล้ว → disable ปุ่มทันที
-                if (arr[i] >= REQUIRED_STUDY_EACH_LEVEL[i]) {
-                    studyButtons[i].setDisable(true);
-                }
-                else {
-                    studyButtons[i].setDisable(!unlocked);
-                }
+            if (count >= REQUIRED_STUDY_EACH_LEVEL[i]) {
+                studyButtons[i].setDisable(true);
+                progressLabels[i].setStyle("-fx-text-fill: #2e7d32; -fx-font-weight: bold;");
+            } else {
+                studyButtons[i].setDisable(!unlocked);
+                progressLabels[i].setStyle("-fx-text-fill: #333333;");
             }
         }
     }
-
 }
