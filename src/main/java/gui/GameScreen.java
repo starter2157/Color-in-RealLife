@@ -147,7 +147,6 @@ public class GameScreen {
 
         // ไป Home → เดินก่อน พอถึงแล้วค่อยเข้า HomeScreen
         btnHome.setOnAction(e -> {
-            System.out.println("Button Home clicked");
             SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.HOME, () -> app.showHomeScreen(gameState));
         });

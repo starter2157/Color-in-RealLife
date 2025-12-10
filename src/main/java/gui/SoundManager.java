@@ -24,7 +24,7 @@ public class SoundManager {
             );
             MediaPlayer cityBgm = new MediaPlayer(cityMedia);
             cityBgm.setCycleCount(MediaPlayer.INDEFINITE); // loop
-            cityBgm.setVolume(0.4); // เบาหน่อย
+            cityBgm.setVolume(0.4);
         } catch (Exception e) {
             System.out.println("Cannot load bgm_city.mp3");
         }
