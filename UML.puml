@@ -1,0 +1,176 @@
+@startuml
+class entity.jobs.Junior {
+}
+class gui.ResultScreen {
+}
+
+
+class entity.items.Uma {
+}
+
+interface entity.base.Workable {
+~ void work(Player)
+}
+
+class entity.jobs.Director {
+}
+class entity.jobs.Newbie {
+}
+class entity.items.Valorant {
+}
+
+interface entity.base.Buyable {
+~ void buyItem(Player)
+}
+
+class player.Stats {
+}
+
+
+class gui.StoreScreen {
+}
+
+
+interface entity.base.Eatable {
+~ void eat(Player)
+}
+
+enum entity.base.GameMode {
++  SHORT
++  MEDIUM
++  LONG
++  MARATHON
+}
+
+class logic.TurnSystem {
+}
+
+class gui.SchoolScreen {
+}
+
+
+enum entity.base.Transportation {
++  WALK
++  SCOOTER
++  CAR
+}
+
+class logic.GameState {
+}
+
+
+abstract class entity.items.Item {
++ {abstract}void buyItem(Player)
+}
+
+
+class gui.StartScreen {
+}
+
+
+class entity.jobs.Job {
+}
+
+
+class gui.HomeScreen {
+}
+
+
+class gui.TheatreScreen {}
+
+
+class gui.WorkplaceScreen {
+}
+
+
+class entity.jobs.Manager {
+}
+class gui.SoundManager {
+}
+
+
+class entity.items.Fries {
+}
+
+class entity.items.Burger {
+}
+
+class player.Inventory {
+}
+
+
+class entity.items.BigMeal {
+}
+
+class entity.items.Formula1 {
+}
+
+class application.Main {
+}
+
+
+class entity.items.PremierLeague {
+}
+
+class entity.items.Lottery {
+}
+
+
+class gui.GameScreen {
+}
+
+
+class player.Player {
+}
+
+
+class entity.items.Car {
+}
+
+class entity.jobs.Senior {
+}
+class entity.items.Scooter {
+}
+
+enum entity.base.PlaceName {
++  HOME
++  SCHOOL
++  STORE
++  THEATRE
++  WORKPLACE
+}
+
+
+
+entity.jobs.Job <|-- entity.jobs.Junior
+entity.base.Buyable <|.. entity.items.Uma
+entity.items.Item <|-- entity.items.Uma
+entity.jobs.Job <|-- entity.jobs.Director
+entity.jobs.Job <|-- entity.jobs.Newbie
+entity.base.Buyable <|.. entity.items.Valorant
+entity.items.Item <|-- entity.items.Valorant
+entity.base.Buyable <|.. entity.items.Item
+entity.base.Workable <|.. entity.jobs.Job
+entity.jobs.Job <|-- entity.jobs.Manager
+entity.base.Buyable <|.. entity.items.Fries
+entity.base.Eatable <|.. entity.items.Fries
+entity.items.Item <|-- entity.items.Fries
+entity.base.Buyable <|.. entity.items.Burger
+entity.base.Eatable <|.. entity.items.Burger
+entity.items.Item <|-- entity.items.Burger
+entity.base.Buyable <|.. entity.items.BigMeal
+entity.base.Eatable <|.. entity.items.BigMeal
+entity.items.Item <|-- entity.items.BigMeal
+entity.base.Buyable <|.. entity.items.Formula1
+entity.items.Item <|-- entity.items.Formula1
+javafx.application.Application <|-- application.Main
+entity.base.Buyable <|.. entity.items.PremierLeague
+entity.items.Item <|-- entity.items.PremierLeague
+entity.base.Buyable <|.. entity.items.Lottery
+entity.items.Item <|-- entity.items.Lottery
+entity.base.Buyable <|.. entity.items.Car
+entity.items.Item <|-- entity.items.Car
+entity.jobs.Job <|-- entity.jobs.Senior
+entity.base.Buyable <|.. entity.items.Scooter
+entity.items.Item <|-- entity.items.Scooter
+@enduml
