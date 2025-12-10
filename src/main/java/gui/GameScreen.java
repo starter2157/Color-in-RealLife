@@ -32,7 +32,7 @@ public class GameScreen {
 
     private static Main app = null;
     private static GameState gameState = null;
-    public static GameMode gameMode;
+    private static GameMode gameMode;
     private Scene scene;
 
     private static Pane root;  // ใช้ disable/enable ตอน player เดิน
@@ -152,27 +152,22 @@ public class GameScreen {
             moveCurrentPlayerTo(PlaceName.HOME, () -> app.showHomeScreen(gameState));
         });
 
-        // ไป Store → เดินก่อน พอถึงแล้วค่อยเข้า StoreScreen
         btnStore.setOnAction(e -> {
-            System.out.println("Button Store clicked");
             SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.STORE, () -> app.showStoreScreen(gameState));
         });
 
         btnThea.setOnAction(e -> {
-            System.out.println("Button Theatre clicked");
             SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.THEATRE, () -> app.showTheatreScreen(gameState));
         });
 
         btnSch.setOnAction(e -> {
-            System.out.println("Button School clicked");
             SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.SCHOOL, () -> app.showSchoolScreen(gameState));
         });
 
         btnWork.setOnAction(e -> {
-            System.out.println("Button Workplace clicked");
             SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.WORKPLACE, () -> app.showWorkplaceScreen(gameState));
         });
@@ -489,5 +484,9 @@ public class GameScreen {
 
     public static Main getApp() {
         return app;
+    }
+
+    public static GameMode getGameMode(){
+        return gameMode;
     }
 }

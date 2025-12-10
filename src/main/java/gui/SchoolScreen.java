@@ -123,13 +123,13 @@ public class SchoolScreen {
         Label nameLabel = new Label(current.getName());
         nameLabel.setStyle("-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: bold;");
 
-        Label moneyLabel = new Label("Money: " + stats.getMoney() + " / " + TurnSystem.getMaxMoney(gameMode));
+        Label moneyLabel = new Label("Money: " + stats.getMoney() + " / " + TurnSystem.getMaxMoney(getGameMode()));
         moneyLabel.setStyle("-fx-text-fill: white;");
 
-        Label happyLabel = new Label("Happiness: " + stats.getHappiness() + " / " + TurnSystem.getMaxHappiness(gameMode));
+        Label happyLabel = new Label("Happiness: " + stats.getHappiness() + " / " + TurnSystem.getMaxHappiness(getGameMode()));
         happyLabel.setStyle("-fx-text-fill: white;");
 
-        Label eduLabel = new Label("Education Level: " + stats.getEducation() + " / " + TurnSystem.getMaxEducation(gameMode));
+        Label eduLabel = new Label("Education Level: " + stats.getEducation() + " / " + TurnSystem.getMaxEducation(getGameMode()));
         eduLabel.setStyle("-fx-text-fill: white;");
 
         Label timeLabel = new Label("Time: " + current.getRemainingTime() + " / " + current.getMAX_TIME_PER_TURN());
@@ -171,23 +171,23 @@ public class SchoolScreen {
         title.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
 
         Label desc = new Label(
-                "เรียนขั้นต่ำ " + REQUIRED_STUDY_EACH_LEVEL[levelIndex] + " ครั้ง\n" +
-                        "ค่าลงทะเบียนครั้งเดียว " + COST_PER_LEVEL[levelIndex] + " ฿"
+                "Require Study " + REQUIRED_STUDY_EACH_LEVEL[levelIndex] + " times\n" +
+                        "One time course enroll price " + COST_PER_LEVEL[levelIndex]
         );
         desc.setWrapText(true);
 
         Label progress = new Label("0 / " + REQUIRED_STUDY_EACH_LEVEL[levelIndex]);
         progressLabels[levelIndex] = progress;
 
-        Button btnStudy = new Button("เรียน");
+        Button btnStudy = new Button("Study");
         btnStudy.setFont(Font.font(14));
         studyButtons[levelIndex] = btnStudy;
 
         btnStudy.setOnAction(e -> {
             handleStudy(levelIndex, currentPlayer);
-            ((Label) educationLabel).setText("Education Level: " + currentPlayer.getStats().getEducation() + " / " + TurnSystem.getMaxEducation(gameMode));
+            ((Label) educationLabel).setText("Education Level: " + currentPlayer.getStats().getEducation() + " / " + TurnSystem.getMaxEducation(getGameMode()));
             ((Label) timeLabel).setText("Time: " + currentPlayer.getRemainingTime() + " / " + currentPlayer.getMAX_TIME_PER_TURN());
-            ((Label) moneyLabel).setText("Money: " + currentPlayer.getStats().getMoney() + " / " + TurnSystem.getMaxMoney(gameMode));
+            ((Label) moneyLabel).setText("Money: " + currentPlayer.getStats().getMoney() + " / " + TurnSystem.getMaxMoney(getGameMode()));
 
         });
 
@@ -232,12 +232,12 @@ public class SchoolScreen {
         Stats stats = player.getStats();
 
         if (stats.getMoney() < cost) {
-            showPopup("เงินไม่พอ", "ต้องใช้เงิน " + cost + " ฿");
+            showPopup("Not enough money", "You need " + cost);
             return false;
         }
 
         player.reduceMoney(cost);
-        showPopup("สมัครเรียนสำเร็จ", "คุณจ่าย " + cost + " ฿");
+        showPopup("Enroll success", "You paid " + cost);
 
         return true;
     }
