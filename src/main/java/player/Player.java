@@ -100,6 +100,8 @@ public class Player {
         stats.setHappiness(stats.getHappiness() + happiness);
     }
 
+    public void reduceHappiness(int happiness) {stats.setHappiness(stats.getHappiness() - happiness);}
+
     public void gainMoney(int money){
         stats.setMoney(stats.getMoney() + money);
     }

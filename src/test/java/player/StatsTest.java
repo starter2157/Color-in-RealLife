@@ -14,7 +14,7 @@ class StatsTest {
         assertEquals(0, stats.getEducation());
         assertEquals(0, stats.getHappiness());
         assertEquals(200, stats.getMoney());
-        assertEquals(200, stats.getPointSummation());
+        assertEquals(0, stats.getPointSummation());
     }
 
     @Test
@@ -44,11 +44,11 @@ class StatsTest {
         stats.setEducation(10);
 
         stats.setPointSummation(GameMode.SHORT);
-        // start = 200
+        // start = 0
         // money = min(2000, 1200) = 1200
         // happiness = min(1500, 1000) = 1000
-        // education = min(10, 8) * 8 = 8 * 8 = 64
-        // total = 200 + 1200 + 1000 + 64 = 2464
-        assertEquals(2464, stats.getPointSummation());
+        // education = min(10, 8) * 100 = 8 * 100 = 800
+        // total = 0 + 1200 + 1000 + 800 = 3000
+        assertEquals(3000, stats.getPointSummation());
     }
 }
