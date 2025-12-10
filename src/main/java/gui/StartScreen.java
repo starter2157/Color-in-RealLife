@@ -46,7 +46,7 @@ public class StartScreen {
 
         // ---------- LABEL + SELECTOR: Number of Players ----------
         Label choosePlayerLabel = new Label("Number of Players");
-        choosePlayerLabel.setTextFill(Color.WHITE);
+        choosePlayerLabel.setTextFill(Color.BLACK);
         choosePlayerLabel.setStyle(
                 "-fx-font-size: 16px;" +
                         "-fx-font-weight: bold;"
@@ -64,7 +64,7 @@ public class StartScreen {
 
         // ---------- LABEL + SELECTOR: Game Mode ----------
         Label chooseModeLabel = new Label("Game Mode");
-        chooseModeLabel.setTextFill(Color.WHITE);
+        chooseModeLabel.setTextFill(Color.BLACK);
         chooseModeLabel.setStyle(
                 "-fx-font-size: 16px;" +
                         "-fx-font-weight: bold;"
