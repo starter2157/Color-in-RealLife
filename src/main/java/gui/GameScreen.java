@@ -196,7 +196,6 @@ public class GameScreen {
         Button btnBack = new Button("Back");
 
         btnEndTurn.setOnAction(e -> {
-            System.out.println(gameState.getCurrentPlayer().isEndTurn() + " " + gameState.isLastPlayerTurn());
             if(gameState.isLastPlayerTurn()){
                 delayScreenChange(() -> getApp().showResultScreen(gameState));
             }
