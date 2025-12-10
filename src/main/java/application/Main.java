@@ -69,7 +69,7 @@ public class Main extends Application {
     }
 
     public void showGameScreen(GameState state) {
-        GameScreen game = new GameScreen(this, state, GameScreen.gameMode);
+        GameScreen game = new GameScreen(this, state, GameScreen.getGameMode());
         primaryStage.setScene(game.getScene());
     }
 
