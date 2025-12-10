@@ -16,7 +16,7 @@ import logic.TurnSystem;
 import player.Player;
 import player.Stats;
 
-import static gui.GameScreen.gameMode;
+import static gui.GameScreen.getGameMode;
 import static gui.GameScreen.refreshUI;
 
 public class StoreScreen {
@@ -76,11 +76,11 @@ public class StoreScreen {
 
         Stats playerStats = current.getStats();
 
-        Label moneyLabel = new Label("Money: " + playerStats.getMoney() + " / " + TurnSystem.getMaxMoney(gameMode));
+        Label moneyLabel = new Label("Money: " + playerStats.getMoney() + " / " + TurnSystem.getMaxMoney(getGameMode()));
         moneyLabel.setStyle("-fx-text-fill: white;");
-        Label happyLabel = new Label("Happiness: " + playerStats.getHappiness() + " / " + TurnSystem.getMaxHappiness(gameMode));
+        Label happyLabel = new Label("Happiness: " + playerStats.getHappiness() + " / " + TurnSystem.getMaxHappiness(getGameMode()));
         happyLabel.setStyle("-fx-text-fill: white;");
-        Label educationalLabel = new Label("Education Level: " + playerStats.getEducation() + " / " + TurnSystem.getMaxEducation(gameMode));
+        Label educationalLabel = new Label("Education Level: " + playerStats.getEducation() + " / " + TurnSystem.getMaxEducation(getGameMode()));
         educationalLabel.setStyle("-fx-text-fill: white;");
         Label timeUsedLabel = new Label("Time: " + current.getRemainingTime() + " / " + current.getMAX_TIME_PER_TURN());
         timeUsedLabel.setStyle("-fx-text-fill: white;");
@@ -192,7 +192,7 @@ public class StoreScreen {
         Label priceLabel = new Label("$" + item.getPrice());
         priceLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2e7d32;");
 
-        Button buyBtn = new Button("ซื้อ");
+        Button buyBtn = new Button("Buy");
         buyBtn.setFont(Font.font(14));
 
         buyBtn.setOnAction(e -> {
@@ -206,13 +206,13 @@ public class StoreScreen {
                 player.buyItem(item);
 
                 int newMoney = money - item.getPrice();
-                moneyLabel.setText("Money: " + newMoney + " / " + TurnSystem.getMaxMoney(gameMode));
+                moneyLabel.setText("Money: " + newMoney + " / " + TurnSystem.getMaxMoney(getGameMode()));
                 timeUsedLabel.setText("Time: " + player.getRemainingTime() + " / " + player.getMAX_TIME_PER_TURN());
-                happyLabel.setText("Happiness: " + player.getStats().getHappiness() + " / " + TurnSystem.getMaxHappiness(gameMode));
-                statusLabel.setText("Buy " + item.getName() + " price $" + item.getPrice() + " สำเร็จ");
+                happyLabel.setText("Happiness: " + player.getStats().getHappiness() + " / " + TurnSystem.getMaxHappiness(getGameMode()));
+                statusLabel.setText("Buy " + item.getName() + " price " + item.getPrice() + " success");
 
             } else {
-                statusLabel.setText("เงินไม่พอสำหรับ " + item.getName() + " (ต้องการ $" + item.getPrice() + ")");
+                statusLabel.setText("Not enough money for " + item.getName() + " (Need " + item.getPrice() + ")");
             }
         });
 

@@ -69,11 +69,11 @@ public class HomeScreen {
 
         Stats playerStats = current.getStats();
 
-        Label moneyLabel = new Label("Money: " + playerStats.getMoney() + " / " + TurnSystem.getMaxMoney(gameMode));
+        Label moneyLabel = new Label("Money: " + playerStats.getMoney() + " / " + TurnSystem.getMaxMoney(getGameMode()));
         moneyLabel.setStyle("-fx-text-fill: white;");
-        Label happyLabel = new Label("Happiness: " + playerStats.getHappiness() + " / " + TurnSystem.getMaxHappiness(gameMode));
+        Label happyLabel = new Label("Happiness: " + playerStats.getHappiness() + " / " + TurnSystem.getMaxHappiness(getGameMode()));
         happyLabel.setStyle("-fx-text-fill: white;");
-        Label educationalLabel = new Label("Education Level: " + playerStats.getEducation() + " / " + TurnSystem.getMaxEducation(gameMode));
+        Label educationalLabel = new Label("Education Level: " + playerStats.getEducation() + " / " + TurnSystem.getMaxEducation(getGameMode()));
         educationalLabel.setStyle("-fx-text-fill: white;");
         Label timeUsedLabel = new Label("Time: " + current.getRemainingTime() + " / " + current.getMAX_TIME_PER_TURN());
         timeUsedLabel.setStyle("-fx-text-fill: white;");
@@ -97,13 +97,13 @@ public class HomeScreen {
 
             // TODO: เติม logic จริง เช่น เพิ่ม happiness / ลดเงิน / ใช้เทิร์น ฯลฯ
             if(p.isEndTurn()){
-                statusLabel.setText(p.getName() + " NoTime!!!");
+                statusLabel.setText(p.getName() + " No Time TO REST!!!");
             } else {
 
                 p.rest();
 
                 timeUsedLabel.setText("Time: " + current.getRemainingTime() + " / " + current.getMAX_TIME_PER_TURN());
-                happyLabel.setText("Happiness: " + current.getStats().getHappiness() + " / " + TurnSystem.getMaxHappiness(gameMode));
+                happyLabel.setText("Happiness: " + current.getStats().getHappiness() + " / " + TurnSystem.getMaxHappiness(getGameMode()));
                 statusLabel.setText(p.getName() + " Rested!");
             }
         });
