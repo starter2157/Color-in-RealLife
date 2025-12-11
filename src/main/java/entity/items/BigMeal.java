@@ -4,6 +4,7 @@ import entity.base.Buyable;
 import entity.base.Eatable;
 import player.Player;
 
+// Items BigMeal
 public class BigMeal extends Item implements Buyable, Eatable {
 
     public BigMeal(){
