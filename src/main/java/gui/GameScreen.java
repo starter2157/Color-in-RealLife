@@ -32,7 +32,7 @@ public class GameScreen {
 
     private static Main app = null;
     private static GameState gameState = null;
-    public static GameMode gameMode;
+    private static GameMode gameMode;
     private Scene scene;
 
     private static Pane root;  // ใช้ disable/enable ตอน player เดิน
@@ -147,32 +147,26 @@ public class GameScreen {
 
         // ไป Home → เดินก่อน พอถึงแล้วค่อยเข้า HomeScreen
         btnHome.setOnAction(e -> {
-            System.out.println("Button Home clicked");
             SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.HOME, () -> app.showHomeScreen(gameState));
         });
 
-        // ไป Store → เดินก่อน พอถึงแล้วค่อยเข้า StoreScreen
         btnStore.setOnAction(e -> {
-            System.out.println("Button Store clicked");
             SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.STORE, () -> app.showStoreScreen(gameState));
         });
 
         btnThea.setOnAction(e -> {
-            System.out.println("Button Theatre clicked");
             SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.THEATRE, () -> app.showTheatreScreen(gameState));
         });
 
         btnSch.setOnAction(e -> {
-            System.out.println("Button School clicked");
             SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.SCHOOL, () -> app.showSchoolScreen(gameState));
         });
 
         btnWork.setOnAction(e -> {
-            System.out.println("Button Workplace clicked");
             SoundManager.playClick();
             moveCurrentPlayerTo(PlaceName.WORKPLACE, () -> app.showWorkplaceScreen(gameState));
         });
@@ -202,6 +196,9 @@ public class GameScreen {
         Button btnBack = new Button("Back");
 
         btnEndTurn.setOnAction(e -> {
+            if(gameState.isLastPlayerTurn()){
+                delayScreenChange(() -> getApp().showResultScreen(gameState));
+            }
             gameState.nextPlayerTurn();
             resetCurrentPlayerToHome(gameState.getCurrentPlayer().getCurrentLocation());
             refreshUI();
@@ -279,7 +276,7 @@ public class GameScreen {
                 "Education Level: " + p.getStats().getEducation() + " / " + TurnSystem.getMaxEducation(gameMode));
         educationLabel.setStyle("-fx-text-fill: white;");
         Label timeLabel = new Label(
-                "Time: " + p.getRemainingTime() + " / " + p.getMaxTimePerTurn());
+                "Time: " + p.getRemainingTime() + " / " + p.getMAX_TIME_PER_TURN());
         timeLabel.setStyle("-fx-text-fill: white;");
 
         box.getChildren().addAll(portrait, name, moneyRow, happyRow, educationLabel, timeLabel);
@@ -489,5 +486,9 @@ public class GameScreen {
 
     public static Main getApp() {
         return app;
+    }
+
+    public static GameMode getGameMode(){
+        return gameMode;
     }
 }

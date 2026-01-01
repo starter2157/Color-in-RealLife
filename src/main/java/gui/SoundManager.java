@@ -19,12 +19,11 @@ public class SoundManager {
 
 
         try {
-            Media cityMedia = new Media(
+            AudioClip cityMedia = new AudioClip(
                     SoundManager.class.getResource("/sounds/bgm_city.mp3").toExternalForm()
             );
-            MediaPlayer cityBgm = new MediaPlayer(cityMedia);
-            cityBgm.setCycleCount(MediaPlayer.INDEFINITE); // loop
-            cityBgm.setVolume(0.4); // เบาหน่อย
+            cityMedia.setCycleCount(AudioClip.INDEFINITE); // loop
+            cityMedia.setVolume(0.4);
         } catch (Exception e) {
             System.out.println("Cannot load bgm_city.mp3");
         }

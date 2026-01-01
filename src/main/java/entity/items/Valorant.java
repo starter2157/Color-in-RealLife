@@ -12,7 +12,7 @@ public class Valorant extends Item implements Buyable {
     @Override
     public void buyItem(Player player){
         player.reduceMoney(getPrice());
-        player.gainHappiness(10);
+        player.gainHappiness(15);
         player.useTime(45);
     }
 }
